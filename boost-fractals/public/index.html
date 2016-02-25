@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="experimentApp">
+<head>
+    <meta charset="UTF-8">
+    <title>Tom Schonber'g Lab</title>
+
+    <link href="../jspsych-5.0.3/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+
+    <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+    <script src="../jspsych-5.0.3/jspsych.js"></script>
+    <script src="../jspsych-5.0.3/plugins/jspsych-text.js"></script>
+    <script src="../jspsych-5.0.3/plugins/jspsych-single-stim.js"></script>
+
+    <script src="bundle.js"></script>
+</head>
+<body>
+    <div ng-controller="mainController">
+        <h1>{{ message }}</h1>
+    </div>
+    <div id="jspsych-target"></div>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Boost Fractals</title>
+    <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+    <!--<script src="/js/lodash.js"></script>-->
+    <script src="../common.js"></script>
+    <script src="../jspsych-5.0.3/jspsych.js"></script>
+    <script src="../jspsych-5.0.3/plugins/jspsych-text.js"></script>
+    <script src="../jspsych-5.0.3/plugins/jspsych-single-stim.js"></script>
+    <link href="../jspsych-5.0.3/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+</head>
+<body>
+    <div id="jspsych-target"></div>
+</body>
+<script>
+    $( document ).ready(function() {
+        console.log( "ready!" );
+    });
+
+    $.get('/stimuli/vis', function (response){
+        var stimuli = response.stimuli;
+
+        var l = common.createRandomCompetitions(stimuli, response.rankingTrials);
+
+        var competitions_stimuli = [];
+        for (var i = 0; i < l.list1.length; i++){
+            competitions_stimuli.push(
+                    {
+                        data:{
+                            stim1: l.list1[i],
+                            stim2: l.list2[i]
+                        },
+                        stimulus:
+                            '<img src="/stim/vis/' + l.list1[i] + '" id="jspsych-single-stim-stimulus" style="float: left; width: 350px;">' +
+                            '<img src="/stim/vis/' + l.list2[i] + '" id="jspsych-single-stim-stimulus" style="float: right; width: 350px;">'
+                    });
+        }
+
+        var rankingKeys = { left: 'Z', right: 'X'}
+        var rankingKeyCodes = {
+            left: jsPsych.pluginAPI.convertKeyCharacterToKeyCode(rankingKeys.left),
+            right: jsPsych.pluginAPI.convertKeyCharacterToKeyCode(rankingKeys.right)
+        }
+
+        var c = common.colley(stimuli.length);
+
+        var rankingTrials = {
+            type: 'single-stim',
+            choices: [rankingKeys.left, rankingKeys.right],
+            //timing_response: 1500,
+            is_html: true,
+            timeline: competitions_stimuli,
+            on_finish: function(data){
+                var selected = '';
+                if (rankingKeyCodes.left == data.key_press){
+                    selected = 'stim1';
+                    c.addGame(_.indexOf(stimuli,data.stim1), _.indexOf(stimuli,data.stim2));
+                }else{
+                    c.addGame(_.indexOf(stimuli,data.stim2), _.indexOf(stimuli,data.stim1));
+                }
+                jsPsych.data.addDataToLastTrial({selected: selected});
+            }
+        };
+
+        var timeline = [];
+        timeline.push(rankingTrials);
+
+        var images = [];
+        stimuli.forEach(function(stim){
+            images.push('/stim/vis/' + stim);
+        });
+
+        jsPsych.pluginAPI.preloadImages(images, function(){
+            jsPsych.init({
+                display_element: $('#jspsych-target'),
+                timeline: timeline,
+                fullscreen: false,
+                on_finish: function() {
+                    //jsPsych.data.displayData();
+                    secondStage();
+                }
+            });
+        });
+
+        function secondStage(){
+            var rankings = c.solve().array;
+
+            var hello_trial = {
+                type: 'single-stim',
+                is_html: true,
+                stimulus: '<p>' + stimuli.toString() + '</p>' + '<p>' + rankings.toString() + '</p>'
+            };
+            var timeline2 = [];
+            timeline2.push(hello_trial);
+
+            jsPsych.init({
+                display_element: $('#jspsych-target'),
+                timeline: timeline2,
+                fullscreen: false,
+                on_finish: function() {
+                    console.log(stimuli);
+                    console.log(rankings);
+                }
+            });
+        };
+    });
+</script>
+</html>

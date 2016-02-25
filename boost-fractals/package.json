@@ -1,0 +1,54 @@
+{
+  "name": "boost-fractals",
+  "version": "1.0.0",
+  "description": "jsPsych client and server app",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "jsPsych",
+    "javascript",
+    "node",
+    "angular"
+  ],
+  "author": "Jonathan Ataria",
+  "license": "ISC",
+  "dependencies": {
+    "angular": "^1.5.0",
+    "body-parser": "^1.15.0",
+    "browserify-middleware": "^7.0.0",
+    "colley-rankings": "^1.0.2",
+    "express": "^4.13.4",
+    "http-status": "^0.2.0",
+    "jquery": "^2.2.0",
+    "lodash": "^4.4.0",
+    "morgan": "^1.6.1",
+    "nconf": "^0.8.4"
+  },
+  "devDependencies": {
+    "browserify": "^13.0.0",
+    "browserify-shim": "^3.8.12",
+    "gulp": "^3.9.1",
+    "gulp-cached": "^1.1.0",
+    "gulp-connect": "^2.3.1",
+    "vinyl-source-stream": "^1.1.0"
+  },
+  "browserify-shim": {
+    "jspsych": "global:jsPsych"
+  },
+  "browserify": {
+    "transform": [
+      "browserify-shim"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jony543/schonberg-lab.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jony543/schonberg-lab/issues"
+  },
+  "homepage": "https://github.com/jony543/schonberg-lab#readme"
+}
