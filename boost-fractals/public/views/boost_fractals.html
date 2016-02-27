@@ -46,6 +46,11 @@
 
         var c = common.colley(stimuli.length);
 
+        var ranking_result = {};
+        ranking_result.trials = [];
+        ranking_result.items_ranking = [];
+        ranking_result.trial_count = 0;
+
         var rankingTrials = {
             type: 'single-stim',
             choices: [rankingKeys.left, rankingKeys.right],
@@ -54,6 +59,10 @@
             timeline: competitions_stimuli,
             on_finish: function(data){
                 var selected = '';
+
+                var nStim1 = _.indexOf(stimuli,data.stim1);
+                var nStim2 = _.indexOf(stimuli,data.stim2);
+
                 if (rankingKeyCodes.left == data.key_press){
                     selected = 'stim1';
                     c.addGame(_.indexOf(stimuli,data.stim1), _.indexOf(stimuli,data.stim2));
@@ -61,6 +70,18 @@
                     c.addGame(_.indexOf(stimuli,data.stim2), _.indexOf(stimuli,data.stim1));
                 }
                 jsPsych.data.addDataToLastTrial({selected: selected});
+
+                ranking_result.trial_count = ranking_result.trial_count + 1;
+                ranking_result.trials.push({
+                    runtrial: ranking_result.trial_count,
+                    onsettime: data.time_elapsed,
+                    ImageLeft: data.stim1,
+                    ImageRight: data.stim2,
+                    StimNumLeft: nStim1,
+                    StimNumRight: nStim2,
+                    out: 2,
+                    RT: data.rt
+                });
             }
         };
 
@@ -79,7 +100,15 @@
                 fullscreen: false,
                 on_finish: function() {
                     //jsPsych.data.displayData();
-                    secondStage();
+                    var rankings = c.solve().array;
+                    for (var i=0; i < rankings.length; i++){
+                        ranking_result.items_ranking.push({
+                            StimName: stimuli[i],
+                            StimNum: i+1,
+                            Rank: rankings[i]
+                        });
+                    }
+                    //secondStage();
                 }
             });
         });

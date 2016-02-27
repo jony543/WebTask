@@ -23,6 +23,7 @@ jsPsych.plugins["single-audio"] = (function() {
     trial.response_ends_trial = (typeof trial.response_ends_trial === 'undefined') ? true : trial.response_ends_trial;
     // timing parameters
     trial.timing_response = trial.timing_response || -1; // if -1, then wait for response forever
+    trial.audio_timing = trial.audio_timing || 0.1;
     trial.prompt = (typeof trial.prompt === 'undefined') ? "" : trial.prompt;
 
     // if any trial variables are functions
@@ -38,7 +39,7 @@ jsPsych.plugins["single-audio"] = (function() {
     var source = context.createBufferSource();
     source.buffer = jsPsych.pluginAPI.getAudioBuffer(trial.stimulus);
     source.connect(context.destination);
-    startTime = context.currentTime + 0.1;
+    startTime = context.currentTime + trial.audio_timing/1000;
     source.start(startTime);
 
     // show prompt if there is one
