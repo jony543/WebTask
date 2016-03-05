@@ -19,10 +19,10 @@
         console.log( "ready!" );
     });
 
-    $.get('/stimuli/vis', function (response){
-        var stimuli = response.stimuli;
+    $.get('/stimuli/vis', function (expData){
+        var stimuli = expData.stimuli;
 
-        var l = common.createRandomCompetitions(stimuli, response.rankingTrials);
+        var l = common.createRandomCompetitions(stimuli, expData.rankingTrials);
 
         var competitions_stimuli = [];
         for (var i = 0; i < l.list1.length; i++){
@@ -38,10 +38,9 @@
                     });
         }
 
-        var rankingKeys = { left: 'Z', right: 'X'}
-        var rankingKeyCodes = {
-            left: jsPsych.pluginAPI.convertKeyCharacterToKeyCode(rankingKeys.left),
-            right: jsPsych.pluginAPI.convertKeyCharacterToKeyCode(rankingKeys.right)
+        expData.ranking_key_codes = {
+            left: jsPsych.pluginAPI.convertKeyCharacterToKeyCode(expData.ranking_keys.left),
+            right: jsPsych.pluginAPI.convertKeyCharacterToKeyCode(expData.ranking_keys.right)
         }
 
         var c = common.colley(stimuli.length);
@@ -53,7 +52,7 @@
 
         var rankingTrials = {
             type: 'single-stim',
-            choices: [rankingKeys.left, rankingKeys.right],
+            choices: [expData.ranking_keys.left, expData.ranking_keys.right],
             //timing_response: 1500,
             is_html: true,
             timeline: competitions_stimuli,
@@ -63,7 +62,7 @@
                 var nStim1 = _.indexOf(stimuli,data.stim1);
                 var nStim2 = _.indexOf(stimuli,data.stim2);
 
-                if (rankingKeyCodes.left == data.key_press){
+                if (expData.ranking_key_codes.left == data.key_press){
                     selected = 'stim1';
                     c.addGame(_.indexOf(stimuli,data.stim1), _.indexOf(stimuli,data.stim2));
                 }else{

@@ -602,6 +602,11 @@ jsPsych.data = (function() {
   // data properties for all trials
   var dataProperties = {};
 
+  module.clear = function() {
+    allData = [];
+    dataProperties = {};
+  };
+
   module.getData = function() {
     return $.extend(true, [], allData); // deep clone
   };

@@ -1,3 +1,4 @@
+var config = require('./config')
 var fs = require('fs');
 var httpStatus = require('http-status');
 var path = require('path');
@@ -21,16 +22,27 @@ module.exports = function (app) {
             if (err){
                 return res.sendStatus(httpStatus.INTERNAL_SERVER_ERROR).json({ err: err });
             }
-            return res.send({
-                stimuli: files,
-                rankingTrials: 5,
-                trainingRuns: 1,
-                LV_GO_idxs: [],
-                LV_NOGO_idxs: [],
-                HV_GO_idxs: [],
-                HV_NOGO_idxs: [],
-                THROW_idxs: []
-            });
+
+            var expData = config.get('defaults:expData');
+            expData.stimuli = files;
+
+            return res.send(expData);
+        });
+    });
+
+    app.post('/exp/ranking', function (req, res) {
+        var exp_name = 'boost_fractals';
+        req.session.subject = req.body; // TODO - validate user input
+
+        fs.readdir('./public/resources/' + exp_name + '/stimuli/images/', function(err, files){
+            if (err){
+                return res.sendStatus(httpStatus.INTERNAL_SERVER_ERROR).json({ err: err });
+            }
+
+            var expData = config.get('defaults:expData');
+            expData.stimuli = files;
+
+            return res.send(expData);
         });
     });
 };
