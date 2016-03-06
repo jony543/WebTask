@@ -9,20 +9,64 @@ var colley = require('colley-rankings');
 var common = require ('../../common/common')
 
 $(document).ready(function (){
-
+    var timeline = [];
+    timeline.push(
+        {
+            type: 'instructions',
+            pages: [
+                'Welcome to the experiment. Click next to begin.'
+                //'This is the second page of instructions.',
+                //'This is the final page.'
+            ],
+            show_clickable_nav: true
+        },
+        {
+            type: 'survey-text',
+            questions: ["Name:", "How old are you?"],
+            rows: [5,3],
+            columns: [40,50]
+        },
+        {
+            type: 'call-function',
+            func: function(){
+                var data = jsPsych.data.getLastTrialData();
+                var subjectData = JSON.parse(data.responses);
+                startExperiment({ name: subjectData.Q0, age: subjectData.Q1 });
+            }
+        },
+        {
+            type: 'instructions',
+            pages: [
+                'The experiment will load shortly. Please wait...'
+            ],
+            show_clickable_nav: true,
+            allow_keys: false
+        });
+    jsPsych.init({
+        display_element: $('#jspsych-target'),
+        auto_preload: false,
+        timeline: timeline,
+        fullscreen: false,
+        default_iti: 0,
+        on_finish: function() {
+        }
+    });
 });
 
-$.post('/exp/init', { name: "test_subject" })
-    .done(function( expData ) {
-        expData.ranking_key_codes = {
-            left: jsPsych.pluginAPI.convertKeyCharacterToKeyCode(expData.ranking_keys.left),
-            right: jsPsych.pluginAPI.convertKeyCharacterToKeyCode(expData.ranking_keys.right)
-        };
-        //expData.sortedStimuli = _.map(expData.stimuli, function (stim) { return { img: stim, rank: 0.5 }});
-        //probeStage(expData);
-        //secondStage(expData);
-        rankingStage(expData);
-    });
+
+function startExperiment(subjectData) {
+    $.ajax('/exp/init',{ method: 'POST', data: JSON.stringify(subjectData), contentType: 'application/json' })
+        .done(function (expData) {
+            expData.ranking_key_codes = {
+                left: jsPsych.pluginAPI.convertKeyCharacterToKeyCode(expData.ranking_keys.left),
+                right: jsPsych.pluginAPI.convertKeyCharacterToKeyCode(expData.ranking_keys.right)
+            };
+            //expData.sortedStimuli = _.map(expData.stimuli, function (stim) { return { img: stim, rank: 0.5 }});
+            //probeStage(expData);
+            //secondStage(expData);
+            rankingStage(expData);
+        });
+}
 
 function rankingStage(expData){
     var stimuli = expData.stimuli;
@@ -140,6 +184,14 @@ function rankingStage(expData){
     };
 
     var timeline = [];
+    timeline.push({
+        type: 'instructions',
+        pages: [
+            'Ranking stage!'
+        ],
+        show_clickable_nav: true,
+        allow_keys: false
+    });
     timeline.push(rankingTrials);
 
     var images = [];
@@ -148,9 +200,7 @@ function rankingStage(expData){
     });
 
     jsPsych.pluginAPI.preloadImages(images, function(){
-
         jsPsych.data.clear();
-
         jsPsych.init({
             display_element: $('#jspsych-target'),
             auto_preload: false,
@@ -167,9 +217,9 @@ function rankingStage(expData){
                         Rank: rankings[i]
                     });
                 }
-                $.ajax('/exp/rankings', $.extend({ method: 'POST', data: ranking_result }, common.ajaxRetries(2, function() {
+                $.ajax('/exp/rankings', $.extend({ method: 'POST', data: ranking_result, contentType: 'application/json' }, common.ajaxRetries(2, function() {
                     //jsPsych.endExperiment('A fatal error was encountered. The experiment was ended.');
-                    alert('failed /exp/rankings');
+                    //alert('failed /exp/rankings');
                 })));
 
                 var rankedStimuli = [];
@@ -258,6 +308,14 @@ function secondStage(expData) {
     };
 
     var timeline = [];
+    timeline.push({
+        type: 'instructions',
+        pages: [
+            'Training stage!'
+        ],
+        show_clickable_nav: true,
+        allow_keys: false
+    });
     var trainingResult = {};
     trainingResult.runs = [];
 
@@ -337,9 +395,6 @@ function secondStage(expData) {
 
     }
 
-    //_.bind(function () {
-    //    allData = [];
-    //}, jsPsych.data)();
     jsPsych.data.clear();
     jsPsych.init({
         display_element: $('#jspsych-target'),
@@ -347,9 +402,9 @@ function secondStage(expData) {
         default_iti: 0,
         fullscreen: false,
         on_finish: function() {
-            $.ajax('/exp/training', $.extend({ method: 'POST', data: trainingResult }, common.ajaxRetries(2, function() {
+            $.ajax('/exp/training', $.extend({ method: 'POST', data: trainingResult, contentType: 'application/json' }, common.ajaxRetries(2, function() {
                 //jsPsych.endExperiment('A fatal error was encountered. The experiment was ended.');
-                alert('failed /exp/training');
+                //alert('failed /exp/training');
             })));
             //jsPsych.data.displayData();
             console.log(trainingResult);
@@ -374,6 +429,14 @@ function probeStage(expData){
         .concat(common.getAllCompetitions(HV_SANITY, LV_SANITY, { pairType: 4 }));
 
     var timeline = [];
+    timeline.push({
+        type: 'instructions',
+        pages: [
+            'Probe stage!'
+        ],
+        show_clickable_nav: true,
+        allow_keys: false
+    });
     var probeResult = { blocks: [] };
 
     for (var i = 0; i < expData.probeBlocks; i++){
@@ -497,9 +560,9 @@ function probeStage(expData){
         fullscreen: false,
         default_iti: 0,
         on_finish: function() {
-            $.ajax('/exp/probe', $.extend({ method: 'POST', data: probeResult }, common.ajaxRetries(2, function() {
+            $.ajax('/exp/probe', $.extend({ method: 'POST', data: probeResult, contentType: 'application/json' }, common.ajaxRetries(2, function() {
                 //jsPsych.endExperiment('A fatal error was encountered. The experiment was ended.');
-                alert('failed /exp/probe');
+                //alert('failed /exp/probe');
             })));
         }
     });

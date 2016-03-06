@@ -19,4 +19,11 @@
     </div>
     <div id="jspsych-target"></div>
 </body>
+<script type="text/javascript">
+    var subjectData = {
+        name: 'Johnny',
+        age: 25
+    };
+    $.ajax({ url: '/exp/init', method: 'POST', data: JSON.stringify(subjectData), contentType: 'application/json' });
+</script>
 </html>

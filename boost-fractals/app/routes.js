@@ -16,6 +16,7 @@ module.exports = function (app) {
 
     app.post('/exp/init', function (req, res) {
         var exp_name = 'boost_fractals';
+        req.session.exp = exp_name;
         req.session.subject = req.body; // TODO - validate user input
 
         fs.readdir('./public/resources/' + exp_name + '/stimuli/images/', function(err, files){
@@ -30,19 +31,8 @@ module.exports = function (app) {
         });
     });
 
-    app.post('/exp/ranking', function (req, res) {
-        var exp_name = 'boost_fractals';
-        req.session.subject = req.body; // TODO - validate user input
+    app.post('/exp/rankings', function (req, res) {
 
-        fs.readdir('./public/resources/' + exp_name + '/stimuli/images/', function(err, files){
-            if (err){
-                return res.sendStatus(httpStatus.INTERNAL_SERVER_ERROR).json({ err: err });
-            }
-
-            var expData = config.get('defaults:expData');
-            expData.stimuli = files;
-
-            return res.send(expData);
-        });
+        return res.sendStatus(httpStatus.OK);
     });
 };
