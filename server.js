@@ -10,9 +10,10 @@ var session = require('express-session');
 //var browserify = require('browserify-middleware');
 
 var config = require('./app/config.js');
-var port     = process.env.PORT || 8080;  // set the port
+var port     = process.env.PORT || config.get('port') || 8080;  // set the port
 var morgan = require('morgan');             // log
 var bodyParser = require('body-parser');    // pull information from HTML POST (express4)
+var serveIndex = require('serve-index')
 
 process.env.PWD = process.cwd();
 
@@ -23,8 +24,13 @@ app.use(session({
     saveUninitialized: false,
     resave: false
 }));
-//app.use('/js/common.js', browserify([{ './common/common.js': {standalon: 'common'}}]));
-//app.use('/js/lodash.js', browserify(['lodash']));
+
+if (config.get('ENVIRONMENT') == 'DEVELOPMENT'){
+    //app.use('/output', express.directory(process.env.PWD + '/output'));
+    app.use('/output', serveIndex('./output', { 'icons': true, 'view': 'details' }));
+    app.use('/output', express.static(process.env.PWD + '/output'));
+}
+
 app.use(express.static(process.env.PWD + '/public'));          // set the static files location /public/img will be /img for users
 //app.use(morgan('dev'));                                         // log every request to the console
 app.use(bodyParser.json());                                     // parse application/json

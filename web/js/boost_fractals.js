@@ -84,8 +84,7 @@ function rankingStage(expData){
         {
             type: 'instructions',
             pages: [
-                //'<div style="background-image: url(/resources/boost_fractals/instructions/binary_ranking.jpg);" />'
-                '<img style="max-height: 100%; max-width: 100%; height: auto;" src="/resources/boost_fractals/instructions/binary_ranking.jpg" />'
+                '<img style="max-height: 100%; max-width: 100%; height: auto;" src="/resources/boost_fractals/instructions/binary_ranking.JPG" />'
             ],
             key_forward: ' ',
             allow_backward: false,
