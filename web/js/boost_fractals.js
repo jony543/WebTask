@@ -9,7 +9,12 @@ var colley = require('colley-rankings');
 var common = require ('../../common/common')
 
 $(document).ready(function (){
+    welcome();
+});
+
+function welcome(){
     var timeline = [];
+    var subjectData = {};
     timeline.push(
         {
             type: 'instructions',
@@ -22,7 +27,7 @@ $(document).ready(function (){
         },
         {
             type: 'survey-text',
-            questions: ["Name:", "How old are you?"],
+            questions: ["Where are you from?", "How old are you?"],
             rows: [5,3],
             columns: [40,50]
         },
@@ -30,8 +35,13 @@ $(document).ready(function (){
             type: 'call-function',
             func: function(){
                 var data = jsPsych.data.getLastTrialData();
-                var subjectData = JSON.parse(data.responses);
-                startExperiment({ name: subjectData.Q0, age: subjectData.Q1 });
+                $.extend(subjectData, { country: data.Q0, age: data.Q1 });
+            }
+        },
+        {
+            type: 'call-function',
+            func: function(){
+                startExperiment(subjectData);
             }
         },
         {
@@ -48,11 +58,11 @@ $(document).ready(function (){
         timeline: timeline,
         fullscreen: false,
         default_iti: 0,
-        on_finish: function() {
+        on_trial_finish: function(){
+            common.forceFullScreen();
         }
     });
-});
-
+}
 
 function startExperiment(subjectData) {
     $.ajax('/exp/init',{ method: 'POST', data: JSON.stringify(subjectData), contentType: 'application/json' })
@@ -69,9 +79,29 @@ function startExperiment(subjectData) {
 }
 
 function rankingStage(expData){
+    var timeline = [];
+    timeline.push(
+        {
+            type: 'instructions',
+            pages: [
+                //'<div style="background-image: url(/resources/boost_fractals/instructions/binary_ranking.jpg);" />'
+                '<img style="max-height: 100%; max-width: 100%; height: auto;" src="/resources/boost_fractals/instructions/binary_ranking.jpg" />'
+            ],
+            key_forward: ' ',
+            allow_backward: false,
+            show_clickable_nav: false
+        }
+    );
     var stimuli = expData.stimuli;
 
     var l = common.createRandomCompetitions(stimuli, expData.rankingTrials);
+
+    var c = colley(stimuli.length);
+
+    var ranking_result = {};
+    ranking_result.trials = [];
+    ranking_result.items_ranking = [];
+    ranking_result.trial_count = 0;
 
     var competitions_stimuli = [];
     for (var i = 0; i < l.list1.length; i++){
@@ -88,19 +118,25 @@ function rankingStage(expData){
                             nStim1: _.indexOf(stimuli, l.list1[i]),
                             nStim2: _.indexOf(stimuli, l.list2[i])
                         },
-                        stimulus: '<img src="/stim/vis/' + l.list1[i] + '" id="jspsych-single-stim-stimulus" style="float: left; width: 350px;">' +
-                        '<img src="/stim/vis/' + l.list2[i] + '" id="jspsych-single-stim-stimulus" style="float: right; width: 350px;">',
+                        stimulus:
+                                '<img src="/stim/vis/' + l.list1[i] + '" id="jspsych-single-stim-stimulus" style="float: left; width: 350px;">' +
+                                '<text style="font-size: 100px; text-align:center; color: white; position: absolute; margin-top: 110px; margin-left: 20px;">+</text>' +
+                                '<img src="/stim/vis/' + l.list2[i] + '" id="jspsych-single-stim-stimulus" style="float: right; width: 350px;">',
                         on_finish: function (data) {
-                            if (expData.ranking_key_codes.left == data.key_press) {
-                                c.addGame(data.nStim1, data.nStim2);
+                            if (data.key_press > 0) {
+                                if (expData.ranking_key_codes.left == data.key_press) {
+                                    c.addGame(data.nStim1, data.nStim2);
+                                } else {
+                                    c.addGame(data.nStim2, data.nStim1);
+                                }
                             } else {
-                                c.addGame(data.nStim2, data.nStim1);
+
                             }
 
                             ranking_result.trial_count = ranking_result.trial_count + 1;
                             ranking_result.trials.push({
                                 runtrial: ranking_result.trial_count,
-                                onsettime: data.time_elapsed,
+                                onsettime: data.onset_time,
                                 ImageLeft: data.stim1,
                                 ImageRight: data.stim2,
                                 StimNumLeft: data.nStim1,
@@ -118,15 +154,15 @@ function rankingStage(expData){
                             type: 'multi-stim-multi-response',
                             choices: [[], []],
                             stimuli: [
-                                '<p style="font-size: 32px; text-align:center; color: red">You must respond faster</p>',
-                                '<p style="font-size: 100px; text-align:center; color: red">+</p>'],
+                                '<p style="font-size: 32px; text-align:center;">You must respond faster</p>',
+                                '<p style="font-size: 100px; margin-top: 110px; text-align:center;">+</p>'],
                             is_html: true,
                             timing_stim: [500, -1],
                             timing_response: function () {
                                 var prevTrial = jsPsych.data.getLastTrialData();
                                 var prevTrialTime = _.min([prevTrial.rt, expData.ranking_rt])
                                 return expData.ranking_total_time - prevTrialTime;
-                            },
+                            }
                         }]
                     },
                     {
@@ -150,9 +186,10 @@ function rankingStage(expData){
                                     }
 
                                     return [
-                                        '<img src="/stim/vis/' + data.stim1 + '" id="jspsych-single-stim-stimulus" style="float: left; width: 350px; ' + style1 + '">' +
-                                        '<img src="/stim/vis/' + data.stim2 + '" id="jspsych-single-stim-stimulus" style="float: right; width: 350px; ' + style2 + '">',
-                                        '<p style="font-size: 100px; text-align:center; color: red">+</p>'
+                                        '<img src="/stim/vis/' + data.stim1 + '" id="jspsych-single-stim-stimulus" style="float: left; width: 350px;' + style1 + '">' +
+                                        '<text style="font-size: 100px; text-align:center; color: white; position: absolute; margin-top: 110px; margin-left: 20px;">+</text>' +
+                                        '<img src="/stim/vis/' + data.stim2 + '" id="jspsych-single-stim-stimulus" style="float: right; width: 350px;' + style2 + '">',
+                                        '<p style="font-size: 100px; margin-top: 135px; text-align:center;">+</p>'
                                     ];
                                 },
                                 is_html: true,
@@ -161,9 +198,6 @@ function rankingStage(expData){
                                     var prevTrial = jsPsych.data.getLastTrialData();
                                     var prevTrialTime = _.min([prevTrial.rt, expData.ranking_rt])
                                     return expData.ranking_total_time - prevTrialTime;
-                                },
-                                on_finish: function (data){
-                                    return;
                                 }
                             }
                         ]
@@ -172,18 +206,11 @@ function rankingStage(expData){
         );
     }
 
-    var c = colley(stimuli.length);
-
-    var ranking_result = {};
-    ranking_result.trials = [];
-    ranking_result.items_ranking = [];
-    ranking_result.trial_count = 0;
-
     var rankingTrials = {
         timeline: competitions_stimuli
     };
 
-    var timeline = [];
+
     timeline.push({
         type: 'instructions',
         pages: [
@@ -192,7 +219,15 @@ function rankingStage(expData){
         show_clickable_nav: true,
         allow_keys: false
     });
+
     timeline.push(rankingTrials);
+
+    timeline.push(common.waitForServerResponseTrial('/exp/rankings',
+        {
+            data: ranking_result,
+            waitText: 'Loading next trial...',
+            retry_interval: 2000
+        }));
 
     var images = [];
     stimuli.forEach(function(stim){
@@ -207,8 +242,10 @@ function rankingStage(expData){
             timeline: timeline,
             fullscreen: false,
             default_iti: 0,
+            on_trial_finish: function(){
+                common.forceFullScreen();
+            },
             on_finish: function() {
-                //jsPsych.data.displayData();
                 var rankings = c.solve().array;
                 for (var i=0; i < rankings.length; i++){
                     ranking_result.items_ranking.push({
@@ -217,10 +254,6 @@ function rankingStage(expData){
                         Rank: rankings[i]
                     });
                 }
-                $.ajax('/exp/rankings', $.extend({ method: 'POST', data: ranking_result, contentType: 'application/json' }, common.ajaxRetries(2, function() {
-                    //jsPsych.endExperiment('A fatal error was encountered. The experiment was ended.');
-                    //alert('failed /exp/rankings');
-                })));
 
                 var rankedStimuli = [];
                 for (var i = 0; i < stimuli.length; i++){
@@ -298,8 +331,8 @@ function secondStage(expData) {
 
     expData.trainingStimuli = trainingStimuli;
 
-    var ladderHi = 700;
-    var ladderLow = 700;
+    var ladderHi = 750; // TODO - change to parameter
+    var ladderLow = 750;
     var CurrentHighLadder = function () {
         return _.max([0, _.min([ladderHi, 910])]);
     };
@@ -369,7 +402,7 @@ function secondStage(expData) {
                             }else {
                                 ladderLow = ladderLow + 50/3;
                             }
-                        }else {
+                        } else {
                             if (data.stim.high){
                                 ladderHi = ladderHi - 50;
                             }else {
@@ -458,8 +491,10 @@ function probeStage(expData){
                             pairType: stimuli.pairType
                         },
                         stimulus:
-                            '<img src="/stim/vis/' + stimuli.left.img + '" id="jspsych-single-stim-stimulus" style="float: left; width: 350px;">' +
-                            '<img src="/stim/vis/' + stimuli.right.img + '" id="jspsych-single-stim-stimulus" style="float: right; width: 350px;">',
+                        '<div style="margin-top: 170px">' +
+                        '<img src="/stim/vis/' + stimuli.left.img + '" id="jspsych-single-stim-stimulus" style="float: left; width: 350px;">' +
+                        '<text style="font-size: 100px; text-align:center; color: white; position: absolute; margin-top: 110px; margin-left: 20px;">+</text>' +
+                        '<img src="/stim/vis/' + stimuli.right.img + '" id="jspsych-single-stim-stimulus" style="float: right; width: 350px;"></div>',
                         on_finish: function (data) {
                             var out;
                             if (jsPsych.pluginAPI.convertKeyCharacterToKeyCode(expData.ranking_key_codes.left) == data.key_press) {
@@ -493,8 +528,8 @@ function probeStage(expData){
                             type: 'multi-stim-multi-response',
                             choices: [[], []],
                             stimuli: [
-                                '<p style="font-size: 32px; text-align:center; color: red">You must respond faster</p>',
-                                '<p style="font-size: 100px; text-align:center; color: red">+</p>'],
+                                '<p style="font-size: 32px; text-align:center;">You must respond faster</p>',
+                                '<p style="font-size: 100px; text-align:center;">+</p>'],
                             is_html: true,
                             timing_stim: [500, -1],
                             timing_response: function () {
@@ -525,9 +560,12 @@ function probeStage(expData){
                                     }
 
                                     return [
-                                        '<img src="/stim/vis/' + data.stim1 + '" id="jspsych-single-stim-stimulus" style="float: left; width: 350px; ' + style1 + '">' +
-                                        '<img src="/stim/vis/' + data.stim2 + '" id="jspsych-single-stim-stimulus" style="float: right; width: 350px; ' + style2 + '">',
-                                        '<p style="font-size: 100px; text-align:center; color: red">+</p>'
+                                        '<div style="margin-top: 170px">' +
+                                        '<img src="/stim/vis/' + data.stim1 + '" id="jspsych-single-stim-stimulus" style="float: left; width: 350px;' + style1 + '">' +
+                                        '<text style="font-size: 100px; text-align:center; color: white; position: absolute; margin-top: 110px; margin-left: 20px;">+</text>' +
+                                        '<img src="/stim/vis/' + data.stim2 + '" id="jspsych-single-stim-stimulus" style="float: right; width: 350px;' + style2 + '"></div>',
+                                        '<p style="font-size: 100px; text-align:center;">+</p>',
+                                        '<p style="font-size: 100px; text-align:center;">+</p>'
                                     ];
                                 },
                                 is_html: true,

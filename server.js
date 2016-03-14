@@ -16,7 +16,7 @@ var bodyParser = require('body-parser');    // pull information from HTML POST (
 
 // configuration ===============================================================
 app.use(session({
-    secret: 'ssshhhhh',
+    secret: 'this is the secret to be use with !schonberglab% application. fock off.',
     //store: new redisStore({ host: 'localhost', port: 6379, client: client,ttl :  260}),
     saveUninitialized: false,
     resave: false

@@ -573,6 +573,9 @@ var jsPsych = (function() {
       display_element = trial.display_element;
     }
 
+    // set onset time for trial
+    trial.onset_time = jsPsych.totalTime();
+
     // execute trial method
     jsPsych.plugins[trial.type].trial(display_element, trial);
   }
@@ -622,6 +625,7 @@ jsPsych.data = (function() {
       'trial_type': trial.type,
       'trial_index': progress.current_trial_global,
       'time_elapsed': jsPsych.totalTime(),
+      'onset_time': trial.onset_time || -1,
       'internal_node_id': jsPsych.currentTimelineNodeID()
     };
 
