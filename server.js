@@ -10,7 +10,7 @@ var session = require('express-session');
 //var browserify = require('browserify-middleware');
 
 var config = require('./app/config.js');
-var port     = config.get('port') || 8080;  // set the port
+var port     = config.get('port') || 80;  // set the port
 var morgan = require('morgan');             // log
 var bodyParser = require('body-parser');    // pull information from HTML POST (express4)
 
