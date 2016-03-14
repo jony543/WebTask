@@ -26980,7 +26980,7 @@ function welcome(){
         fullscreen: false,
         default_iti: 0,
         on_trial_finish: function(){
-            common.forceFullScreen();
+            //common.forceFullScreen();
         }
     });
 }
@@ -27164,7 +27164,7 @@ function rankingStage(expData){
             fullscreen: false,
             default_iti: 0,
             on_trial_finish: function(){
-                common.forceFullScreen();
+                //common.forceFullScreen();
             },
             on_finish: function() {
                 var rankings = c.solve().array;
