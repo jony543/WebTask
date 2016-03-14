@@ -14,7 +14,7 @@ var port     = process.env.PORT || 8080;  // set the port
 var morgan = require('morgan');             // log
 var bodyParser = require('body-parser');    // pull information from HTML POST (express4)
 
-config.set('dirname', process.cwd());
+process.env.PWD = process.cwd();
 
 // configuration ===============================================================
 app.use(session({
@@ -25,7 +25,7 @@ app.use(session({
 }));
 //app.use('/js/common.js', browserify([{ './common/common.js': {standalon: 'common'}}]));
 //app.use('/js/lodash.js', browserify(['lodash']));
-app.use(express.static(config.get('dirname') + '/public'));          // set the static files location /public/img will be /img for users
+app.use(express.static(process.env.PWD + '/public'));          // set the static files location /public/img will be /img for users
 //app.use(morgan('dev'));                                         // log every request to the console
 app.use(bodyParser.json());                                     // parse application/json
 app.use(bodyParser.urlencoded({ extended: true }));            // parse application/x-www-form-urlencoded
