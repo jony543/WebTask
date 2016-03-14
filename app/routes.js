@@ -22,7 +22,7 @@ module.exports = function (app) {
         req.session.subject = req.body; // TODO - validate user input
         req.session.stage = 1;
 
-        var sessionDir = './output/' + req.session.id;
+        var sessionDir = './output/user_' + req.session.id;
         req.session.dir = sessionDir;
         if (!fs.existsSync(sessionDir)){
             fs.mkdirSync(sessionDir);
