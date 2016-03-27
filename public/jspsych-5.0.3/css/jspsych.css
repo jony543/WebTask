@@ -86,7 +86,7 @@ input[type="text"] {
 /* Container holding jsPsych content */
 
 .jspsych-display-element {
-  width: 800px;
+  /*width: 800px;*/
   margin: 50px auto 50px auto;
 }
 
@@ -197,8 +197,8 @@ input[type="text"] {
 
 #jspsych-single-stim-stimulus {
   display: block;
-  margin-left: auto;
-  margin-right: auto;
+  /*margin-left: auto;*/
+  /*margin-right: auto;*/
 }
 
 /* PLUGIN: jspsych-survey-text */

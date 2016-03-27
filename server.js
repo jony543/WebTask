@@ -3,33 +3,57 @@ var express  = require('express');
 var app      = express();
 
 var session = require('express-session');
-//var redisStore = require('connect-redis')(session);
-//var redis   = require("redis");
-//var client  = redis.createClient();
 
-//var browserify = require('browserify-middleware');
+var redisStore = require('connect-redis')(session);
+var redis   = require("redis");
+var client  = redis.createClient(11882, 'pub-redis-11882.eu-central-1-1.1.ec2.redislabs.com', { no_ready_check: true });
+client.auth('schonberg01', function (err) {
+    if (err) {
+        throw err;
+    }
+});
 
 var config = require('./app/config.js');
 var port     = process.env.PORT || config.get('port') || 8080;  // set the port
 var morgan = require('morgan');             // log
 var bodyParser = require('body-parser');    // pull information from HTML POST (express4)
-var serveIndex = require('serve-index')
 
 process.env.PWD = process.cwd();
 
 // configuration ===============================================================
+
+//var dynamoDBOptions = {
+//    // Name of the table you would like to use for sessions.
+//    // Defaults to 'sessions'
+//    table: 'midgam-sessions',
+//
+//    // Optional path to AWS credentials (loads credentials from environment variables by default)
+//    // AWSConfigPath: './path/to/credentials.json',
+//
+//    // Optional JSON object of AWS configuration options
+//    // AWSConfigJSON: {
+//    //     region: 'us-east-1',
+//    //     correctClockSkew: true
+//    // }
+//
+//    // Optional. How often expired sessions should be cleaned up.
+//    // Defaults to 600000 (10 minutes).
+//    reapInterval: 60*60*1
+//};
+//DynamoDBStore = require('connect-dynamodb')({ session: session });
+//app.use(session({
+//    store: new DynamoDBStore(dynamoDBOptions),
+//    secret: 'keyboard cat',
+//    resave: false,
+//    saveUninitialized: false
+//}));
+
 app.use(session({
     secret: 'this is the secret to be use with !schonberglab% application. fock off.',
-    //store: new redisStore({ host: 'localhost', port: 6379, client: client,ttl :  260}),
+    store: new redisStore({ client: client, ttl : 60*60*1 }),
     saveUninitialized: false,
     resave: false
 }));
-
-if (config.get('ENVIRONMENT') == 'DEVELOPMENT'){
-    //app.use('/output', express.directory(process.env.PWD + '/output'));
-    app.use('/output', serveIndex('./output', { 'icons': true, 'view': 'details' }));
-    app.use('/output', express.static(process.env.PWD + '/output'));
-}
 
 app.use(express.static(process.env.PWD + '/public'));          // set the static files location /public/img will be /img for users
 //app.use(morgan('dev'));                                         // log every request to the console

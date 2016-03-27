@@ -143,6 +143,7 @@ module.exports.ajaxRetries = function(n, cb){
 module.exports.forceFullScreen = function () {
     if (screen.width == window.innerWidth && screen.height == window.innerHeight) {
         // user is already in full screen
+        return true;
     } else {
         // Supports most browsers and their versions.
         var element = document.body;
@@ -156,5 +157,7 @@ module.exports.forceFullScreen = function () {
                 wscript.SendKeys("{F11}");
             }
         }
+
+        return false;
     }
 };

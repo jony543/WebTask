@@ -6,7 +6,7 @@ var _ = require('lodash');
 var jsPsych = require('jspsych');
 var async = require('async');
 var colley = require('colley-rankings');
-var common = require ('../../common/common')
+var common = require ('../../common/common');
 
 $(document).ready(function (){
     welcome();
@@ -49,7 +49,7 @@ function welcome(){
             pages: [
                 'The experiment will load shortly. Please wait...'
             ],
-            show_clickable_nav: true,
+            show_clickable_nav: false,
             allow_keys: false
         });
     jsPsych.init({
@@ -59,7 +59,7 @@ function welcome(){
         fullscreen: false,
         default_iti: 0,
         on_trial_finish: function(){
-            //common.forceFullScreen();
+            common.forceFullScreen();
         }
     });
 }
@@ -80,12 +80,13 @@ function startExperiment(subjectData) {
 
 function rankingStage(expData){
     var timeline = [];
+    var instructionPages = _.map(expData.instructions, function(img){
+        return '<img style="max-height: 100%; max-width: 100%; height: auto;" src="/resource?path=' + img + '" />'
+    });
     timeline.push(
         {
             type: 'instructions',
-            pages: [
-                '<img style="max-height: 100%; max-width: 100%; height: auto;" src="/resources/boost_fractals/instructions/binary_ranking.JPG" />'
-            ],
+            pages: instructionPages,
             key_forward: ' ',
             allow_backward: false,
             show_clickable_nav: false
@@ -118,9 +119,9 @@ function rankingStage(expData){
                             nStim2: _.indexOf(stimuli, l.list2[i])
                         },
                         stimulus:
-                                '<img src="/stim/vis/' + l.list1[i] + '" id="jspsych-single-stim-stimulus" style="float: left; width: 350px;">' +
-                                '<text style="font-size: 100px; text-align:center; color: white; position: absolute; margin-top: 110px; margin-left: 20px;">+</text>' +
-                                '<img src="/stim/vis/' + l.list2[i] + '" id="jspsych-single-stim-stimulus" style="float: right; width: 350px;">',
+                                '<img class="leftStim" src="/stim/vis/' + l.list1[i] + '" id="jspsych-single-stim-stimulus" />' +
+                                '<text class="fixationText">+</text>' +
+                                '<img class="rightStim" src="/stim/vis/' + l.list2[i] + '" id="jspsych-single-stim-stimulus" />',
                         on_finish: function (data) {
                             if (data.key_press > 0) {
                                 if (expData.ranking_key_codes.left == data.key_press) {
@@ -128,10 +129,7 @@ function rankingStage(expData){
                                 } else {
                                     c.addGame(data.nStim2, data.nStim1);
                                 }
-                            } else {
-
                             }
-
                             ranking_result.trial_count = ranking_result.trial_count + 1;
                             ranking_result.trials.push({
                                 runtrial: ranking_result.trial_count,
@@ -154,7 +152,7 @@ function rankingStage(expData){
                             choices: [[], []],
                             stimuli: [
                                 '<p style="font-size: 32px; text-align:center;">You must respond faster</p>',
-                                '<p style="font-size: 100px; margin-top: 110px; text-align:center;">+</p>'],
+                                '<text class="fixationText"">+</text>'],
                             is_html: true,
                             timing_stim: [500, -1],
                             timing_response: function () {
@@ -179,24 +177,24 @@ function rankingStage(expData){
                                     var data = jsPsych.data.getLastTrialData();
 
                                     if (expData.ranking_key_codes.left == data.key_press) {
-                                        style1 = 'border: solid 5px green; margin: -5px;';
+                                        style1 = 'background: green;'; //'border: solid 5px green; margin: -5px;';
                                     } else {
-                                        style2 = 'border: solid 5px green; margin: -5px;';
+                                        style2 = 'background: green;'; //'border: solid 5px green; margin: -5px;';
                                     }
 
                                     return [
-                                        '<img src="/stim/vis/' + data.stim1 + '" id="jspsych-single-stim-stimulus" style="float: left; width: 350px;' + style1 + '">' +
-                                        '<text style="font-size: 100px; text-align:center; color: white; position: absolute; margin-top: 110px; margin-left: 20px;">+</text>' +
-                                        '<img src="/stim/vis/' + data.stim2 + '" id="jspsych-single-stim-stimulus" style="float: right; width: 350px;' + style2 + '">',
-                                        '<p style="font-size: 100px; margin-top: 135px; text-align:center;">+</p>'
+                                        '<img class="leftStim" src="/stim/vis/' + data.stim1 + '" id="jspsych-single-stim-stimulus" style="' + style1 + '"/>' +
+                                        '<text class="fixationText">+</text>' +
+                                        '<img class="rightStim" src="/stim/vis/' + data.stim2 + '" id="jspsych-single-stim-stimulus" style="' + style2 + '" />',
+                                        '<text class="fixationText">+</text>'
                                     ];
                                 },
                                 is_html: true,
                                 timing_stim: [500, -1],
                                 timing_response: function () {
                                     var prevTrial = jsPsych.data.getLastTrialData();
-                                    var prevTrialTime = _.min([prevTrial.rt, expData.ranking_rt])
-                                    return expData.ranking_total_time - prevTrialTime;
+                                    var prevTrialTime = _.min([prevTrial.rt, expData.ranking_rt]);
+                                 return expData.ranking_total_time - prevTrialTime;
                                 }
                             }
                         ]
@@ -242,7 +240,7 @@ function rankingStage(expData){
             fullscreen: false,
             default_iti: 0,
             on_trial_finish: function(){
-                //common.forceFullScreen();
+                common.forceFullScreen();
             },
             on_finish: function() {
                 var rankings = c.solve().array;
@@ -431,6 +429,7 @@ function secondStage(expData) {
     jsPsych.init({
         display_element: $('#jspsych-target'),
         timeline: timeline,
+        auto_preload: false,
         default_iti: 0,
         fullscreen: false,
         on_finish: function() {

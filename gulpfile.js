@@ -36,24 +36,31 @@ gulp.task('copyHTML', function() {
         .pipe(gulp.dest('./public'));
 });
 
-gulp.task('copyResources', function() {
-    gulp.src('web/resources/*.*')
-        .pipe(gulp.dest('./public/resources'))
+gulp.task('copyCSS', function() {
+    gulp.src('web/**/*.css')
+        .pipe(gulp.dest('./public'));
 });
+
+//gulp.task('copyResources', function() {
+//    gulp.src('web/resources/*.*')
+//        .pipe(gulp.dest('./public/resources'))
+//});
 
 gulp.task('watch', function() {
     gulp.watch('web/**/*.js', ['browserify']);
     gulp.watch('common/**/*.js', ['browserifyCommon']);
     gulp.watch('web/**/*.html', ['copyHTML']);
-    gulp.watch('web/resources/*.*', ['copyResources']);
+    gulp.watch('web/**/*.css', ['copyCSS']);
+    //gulp.watch('web/resources/*.*', ['copyResources']);
 });
 
 gulp.task('watchBF', function() {
     gulp.watch('web/**/*.html', ['copyHTML']);
+    gulp.watch('web/**/*.css', ['copyCSS']);
     gulp.watch('common/**/*.js', ['browserifyCommon']);
     gulp.watch('web/**/*.js', ['boostFractals']);
 });
 
-gulp.task('BF', ['copyHTML', 'browserifyCommon', 'boostFractals', 'watchBF']);
+gulp.task('BF', ['copyHTML', 'copyCSS', 'browserifyCommon', 'boostFractals', 'watchBF']);
 
-gulp.task('default', ['copyHTML', 'browserify', 'browserifyCommon', 'watch']); //'connect', (before watch)
+gulp.task('default', ['copyHTML', 'copyCSS', 'browserify', 'browserifyCommon', 'watch']); //'connect', (before watch)
