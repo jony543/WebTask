@@ -58,7 +58,7 @@ var jsPsych = (function() {
         return undefined;
       },
       'show_progress_bar': false,
-      'auto_preload': true,
+      'auto_preload': false,
       'max_load_time': 30000,
       'skip_load_check': false,
       'fullscreen': false,
