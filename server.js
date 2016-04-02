@@ -6,8 +6,8 @@ var session = require('express-session');
 
 var redisStore = require('connect-redis')(session);
 var redis   = require("redis");
-var client  = redis.createClient(11882, 'pub-redis-11882.eu-central-1-1.1.ec2.redislabs.com', { no_ready_check: true });
-client.auth('schonberg01', function (err) {
+var client  = redis.createClient(15029, 'ec2-54-235-164-4.compute-1.amazonaws.com', { no_ready_check: true });
+client.auth('pd0jkt9g0uhivq9u1evc3fbn8qt', function (err) {
     if (err) {
         throw err;
     }
