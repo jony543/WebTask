@@ -14,31 +14,6 @@ module.exports = function (app) {
         res.sendFile(path.normalize(__dirname + '/../public/views/boost_fractals2.html'));
     });
 
-    // api
-    //app.get('/stim/vis/:name', function (req, res) {
-    //    s3.getObject({
-    //        Bucket: config.get('aws:s3Bucket'),
-    //        Key: config.get('expData:name') + '/images/stimuli/' + req.params.name
-    //    }, function(err, data) {
-    //        if (err){
-    //            return res.sendStatus(httpStatus.INTERNAL_SERVER_ERROR).json({ err: err });
-    //        }
-    //        res.type(data.ContentType).send(data.Body);
-    //    });
-    //});
-    //
-    //app.get('/resource', function (req, res) {
-    //    s3.getObject({
-    //        Bucket: config.get('aws:s3Bucket'),
-    //        Key: req.query.path
-    //    }, function(err, data) {
-    //        if (err){
-    //            return res.sendStatus(httpStatus.INTERNAL_SERVER_ERROR).json({ err: err });
-    //        }
-    //        res.type(data.ContentType).send(data.Body);
-    //    });
-    //});
-
     app.post('/exp/init', function (req, res) {
         var expData = config.get('expData');
         var exp_name = 'midgam_binary_rankings';
@@ -65,7 +40,8 @@ module.exports = function (app) {
                     data: req.body.trials,
                     fields: [ { value: 'subjectId', default: req.session.id }, 'runtrial', 'onsettime', 'ImageLeft', 'ImageRight', 'StimNumLeft', 'StimNumRight', 'RT'],
                     quotes: ''
-                }, function(err, csv) {
+                },
+                function(err, csv) {
                     if (err) {
                         return callback(err, null);
                     }
@@ -87,7 +63,8 @@ module.exports = function (app) {
                     data: req.body.items_ranking,
                     fields: [ { value: 'subjectId', default: req.session.id }, 'StimName', 'StimNum', 'Rank'],
                     quotes: ''
-                }, function(err, csv) {
+                },
+                function(err, csv) {
                     if (err) {
                         return callback(err, null);
                     }
