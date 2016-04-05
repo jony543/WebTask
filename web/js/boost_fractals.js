@@ -8,6 +8,7 @@ var async = require('async');
 var colley = require('colley-rankings');
 var common = require ('../../common/common');
 
+
 $(document).ready(function (){
     welcome();
 });
