@@ -104,7 +104,7 @@ module.exports = function (app) {
             }
 
             if (err){
-                return res.sendStatus(httpStatus.INTERNAL_SERVER_ERROR).json({ err: err });
+                return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err: err });
             }else{
                 // TODO - destroy session here?
                 return res.sendStatus(httpStatus.OK);

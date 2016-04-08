@@ -285,7 +285,7 @@ function rankingStage(expData){
                 common.forceFullScreen();
             },
             on_finish: function() {
-                //secondStage(expData);
+                secondStage(expData);
             }
         });
     });
