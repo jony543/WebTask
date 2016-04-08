@@ -24,6 +24,7 @@
     "colley-rankings": "^1.0.2",
     "connect-dynamodb": "^1.0.7",
     "connect-redis": "^3.0.2",
+    "cookie-session": "^2.0.0-alpha.1",
     "express": "^4.13.4",
     "express-session": "^1.13.0",
     "http-status": "^0.2.0",

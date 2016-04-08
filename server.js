@@ -1,17 +1,17 @@
 // set up ======================================================================
 var express  = require('express');
 var app      = express();
+var session = require('cookie-session'); // require('express-session');
 
-var session = require('express-session');
-
-var redisStore = require('connect-redis')(session);
-var redis   = require("redis");
-var client  = redis.createClient(15029, 'ec2-54-235-164-4.compute-1.amazonaws.com', { no_ready_check: true });
-client.auth('pd0jkt9g0uhivq9u1evc3fbn8qt', function (err) {
-    if (err) {
-        throw err;
-    }
-});
+////set up redis
+//var redisStore = require('connect-redis')(session);
+//var redis   = require("redis");
+//var client  = redis.createClient(15029, 'ec2-54-235-164-4.compute-1.amazonaws.com', { no_ready_check: true });
+//client.auth('pd0jkt9g0uhivq9u1evc3fbn8qt', function (err) {
+//    if (err) {
+//        throw err;
+//    }
+//});
 
 var config = require('./app/config.js');
 var port     = process.env.PORT || config.get('port') || 8080;  // set the port
@@ -21,38 +21,21 @@ var bodyParser = require('body-parser');    // pull information from HTML POST (
 process.env.PWD = process.cwd();
 
 // configuration ===============================================================
-
-//var dynamoDBOptions = {
-//    // Name of the table you would like to use for sessions.
-//    // Defaults to 'sessions'
-//    table: 'midgam-sessions',
-//
-//    // Optional path to AWS credentials (loads credentials from environment variables by default)
-//    // AWSConfigPath: './path/to/credentials.json',
-//
-//    // Optional JSON object of AWS configuration options
-//    // AWSConfigJSON: {
-//    //     region: 'us-east-1',
-//    //     correctClockSkew: true
-//    // }
-//
-//    // Optional. How often expired sessions should be cleaned up.
-//    // Defaults to 600000 (10 minutes).
-//    reapInterval: 60*60*1
-//};
-//DynamoDBStore = require('connect-dynamodb')({ session: session });
-//app.use(session({
-//    store: new DynamoDBStore(dynamoDBOptions),
-//    secret: 'keyboard cat',
-//    resave: false,
-//    saveUninitialized: false
-//}));
-
 app.use(session({
-    secret: 'this is the secret to be use with !schonberglab% application. fock off.',
-    store: new redisStore({ client: client, ttl : 60*60*1 }),
-    saveUninitialized: false,
-    resave: false
+    name: 'session',
+    keys: ['key12345'],
+    cookie: {
+        //secure: true,
+        httpOnly: true,
+        //domain: 'example.com',
+        //path: 'foo/bar',
+        //expires: expiryDate,
+        maxAge: 1000*60*60*2 // 2 hours in milliseconds
+    }
+    //secret: 'this is the secret to be use with !schonberglab% application. fock off.',
+    //store: new redisStore({ client: client, ttl : 60*60*1 }),
+    //saveUninitialized: false,
+    //resave: false
 }));
 
 app.use(express.static(process.env.PWD + '/public'));          // set the static files location /public/img will be /img for users
