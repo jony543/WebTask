@@ -103,6 +103,8 @@ module.exports.waitForServerResponseTrial = function(url, opts){
     var payload = opts.data || {};
     var isSending = false;
     var resultValid = false;
+    var maxAttempts = opts.attempts || 3;
+    var attemptsCount = 0;
     return {
         timeline: [
             {
@@ -110,6 +112,7 @@ module.exports.waitForServerResponseTrial = function(url, opts){
                 func: function(){
                     if (!isSending) {
                         isSending = true;
+                        attemptsCount++;
                         $.ajax({
                                 url: url, //'http://localhost:8081' + url,
                                 method: 'POST',
@@ -139,7 +142,7 @@ module.exports.waitForServerResponseTrial = function(url, opts){
             }
         ],
         loop_function: function (){
-            return !resultValid;
+            return !resultValid && attemptsCount < maxAttempts;
         }
     };
 };

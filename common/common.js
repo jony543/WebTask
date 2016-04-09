@@ -102,7 +102,7 @@ module.exports.waitForServerResponseTrial = function(url, opts){
     var payload = opts.data || {};
     var isSending = false;
     var resultValid = false;
-    var maxAttempts = opt.attempts || 3;
+    var maxAttempts = opts.attempts || 3;
     var attemptsCount = 0;
     return {
         timeline: [

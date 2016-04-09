@@ -53,7 +53,7 @@ module.exports = function (app) {
             function (callback){
                 json2csv({
                     data: req.body.trials,
-                    fields: [ { value: 'subjectId', default: req.session.id }, 'runtrial', 'onsettime', 'ImageLeft', 'ImageRight', 'StimNumLeft', 'StimNumRight', 'RT'],
+                    fields: [ { value: 'subjectId', default: req.session.id }, 'runtrial', 'onsettime', 'ImageLeft', 'ImageRight', 'StimNumLeft', 'StimNumRight', 'Response', 'RT'],
                     quotes: ''
                 },
                 function(err, csv) {
@@ -76,7 +76,7 @@ module.exports = function (app) {
             function (callback){
                 json2csv({
                     data: req.body.items_ranking,
-                    fields: [ { value: 'subjectId', default: req.session.id }, 'StimName', 'StimNum', 'Rank'],
+                    fields: [ { value: 'subjectId', default: req.session.id }, 'StimName', 'StimNum', 'Rank', 'Wins', 'Losses'],
                     quotes: ''
                 },
                 function(err, csv) {
