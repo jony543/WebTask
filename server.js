@@ -27,7 +27,7 @@ app.use(session({
     cookie: {
         //secure: true,
         httpOnly: true,
-        //domain: 'example.com',
+        domain: 'schonberg-lab01-dev.eu-west-1.elasticbeanstalk.com',
         //path: 'foo/bar',
         //expires: expiryDate,
         maxAge: 1000*60*60*2 // 2 hours in milliseconds
