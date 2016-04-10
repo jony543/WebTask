@@ -2,32 +2,22 @@
 var express  = require('express');
 var app      = express();
 var session = require('cookie-session'); // require('express-session');
-
-////set up redis
-//var redisStore = require('connect-redis')(session);
-//var redis   = require("redis");
-//var client  = redis.createClient(15029, 'ec2-54-235-164-4.compute-1.amazonaws.com', { no_ready_check: true });
-//client.auth('pd0jkt9g0uhivq9u1evc3fbn8qt', function (err) {
-//    if (err) {
-//        throw err;
-//    }
-//});
-
 var config = require('./app/config.js');
 var port     = process.env.PORT || config.get('port') || 8080;  // set the port
 var morgan = require('morgan');             // log
 var bodyParser = require('body-parser');    // pull information from HTML POST (express4)
-
+var cookieParser = require('cookie-parser')
 process.env.PWD = process.cwd();
 
 // configuration ===============================================================
+app.use(cookieParser());
 app.use(session({
     name: 'session',
     keys: ['key12345'],
     cookie: {
         //secure: true,
         httpOnly: true,
-        domain: 'schonberg-lab01-dev.eu-west-1.elasticbeanstalk.com',
+        //domain: 'schonberg-lab01-dev.eu-west-1.elasticbeanstalk.com',
         //path: 'foo/bar',
         //expires: expiryDate,
         maxAge: 1000*60*60*2 // 2 hours in milliseconds
