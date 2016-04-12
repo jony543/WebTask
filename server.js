@@ -15,17 +15,9 @@ app.use(session({
     name: 'session',
     keys: ['key12345'],
     cookie: {
-        //secure: true,
         httpOnly: true,
-        //domain: 'schonberg-lab01-dev.eu-west-1.elasticbeanstalk.com',
-        //path: 'foo/bar',
-        //expires: expiryDate,
         maxAge: 1000*60*60*2 // 2 hours in milliseconds
     }
-    //secret: 'this is the secret to be use with !schonberglab% application. fock off.',
-    //store: new redisStore({ client: client, ttl : 60*60*1 }),
-    //saveUninitialized: false,
-    //resave: false
 }));
 
 app.use(express.static(process.env.PWD + '/public'));          // set the static files location /public/img will be /img for users

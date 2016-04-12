@@ -46,7 +46,7 @@ module.exports = function (app) {
 
     app.post('/exp/rankings', function (req, res) {
         if (!req.session.subject) {
-            return res.sendStatus(httpStatus.FORBIDDEN);
+            return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ session: JSON.stringify(req.session), cookies: JSON.stringify(req.cookies) });
         }
 
         async.parallel([
