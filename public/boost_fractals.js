@@ -26979,8 +26979,8 @@ function welcome(){
         {
             type: 'survey-text',
             questions: ["Where are you from?", "How old are you?"],
-            rows: [5,3],
-            columns: [40,50]
+            rows: [3,3],
+            columns: [40,40]
         },
         {
             type: 'call-function',
@@ -27205,9 +27205,27 @@ function rankingStage(expData){
     }));
 
     timeline.push({
-        type: 'single-stim',
-        is_html: true,
-        stimulus: '<p style="font-size: 32px; text-align:center; color: violet">Thank you :)</p>'
+        type: 'instructions',
+        pages: [
+            'Click next to continue'
+        ],
+        show_clickable_nav: true
+    },
+    {
+        type: 'call-function',
+        func: function(){
+            expData.sortedStimuli = _.orderBy(ranking_result.items_ranking, 'rank', 'desc');
+            common.forceFullScreen();
+            secondStage(expData);
+        }
+    },
+    {
+        type: 'instructions',
+        pages: [
+            'next stage will load shortly. Please wait...'
+        ],
+        show_clickable_nav: false,
+        allow_keys: false
     });
 
     var images = [];
@@ -27225,17 +27243,13 @@ function rankingStage(expData){
             default_iti: 0,
             on_trial_finish: function(){
                 common.forceFullScreen();
-            },
-            on_finish: function() {
-                expData.sortedStimuli = _.orderBy(ranking_result.items_ranking, 'rank', 'desc');
-                secondStage(expData);
             }
         });
     });
 }
 
 function secondStage(expData) {
-    var audioFile = 'resources/boost_fractals/sound.wav';
+    var audioFile = expData.resourceUrl + '/audio/' + expData.trainingSound;
     var trainingStimuli =
         _.map(expData.sortedStimuli, function (stim, idx) {
             if (_.includes(expData.LV_GO_idxs, idx)) {
@@ -27393,6 +27407,31 @@ function secondStage(expData) {
 
     }
 
+    timeline.push({
+        type: 'instructions',
+        pages: [
+            'Click next to continue'
+        ],
+        show_clickable_nav: true
+    },
+    {
+        type: 'call-function',
+        func: function(){
+            $.ajax('/exp/training', $.extend({ method: 'POST', data: trainingResult, contentType: 'application/json' },
+                common.ajaxRetries(2, function() {
+                    probeStage(expData);
+            })));
+        }
+    },
+    {
+        type: 'instructions',
+        pages: [
+            'next stage will load shortly. Please wait...'
+        ],
+        show_clickable_nav: false,
+        allow_keys: false
+    });
+
     jsPsych.data.clear();
     jsPsych.pluginAPI.preloadAudioFiles([audioFile], function () {
         jsPsych.init({
@@ -27403,15 +27442,6 @@ function secondStage(expData) {
             fullscreen: false,
             on_trial_finish: function(){
                 common.forceFullScreen();
-            },
-            on_finish: function() {
-                $.ajax('/exp/training', $.extend({ method: 'POST', data: trainingResult, contentType: 'application/json' }, common.ajaxRetries(2, function() {
-                    //jsPsych.endExperiment('A fatal error was encountered. The experiment was ended.');
-                    //alert('failed /exp/training');
-                })));
-                //jsPsych.data.displayData();
-                console.log(trainingResult);
-                probeStage(expData);
             }
         });
     });
@@ -27558,7 +27588,7 @@ function probeStage(expData){
     });
 
     jsPsych.data.clear();
-
+    common.forceFullScreen();
     jsPsych.init({
         display_element: $('#jspsych-target'),
         auto_preload: false,

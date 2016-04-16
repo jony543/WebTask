@@ -6,8 +6,17 @@ var async = require('async');
 var crypto = require('crypto');
 var _ = require('lodash');
 var json2csv = require('json2csv');
+
 var AWS = require('aws-sdk');
+AWS.config.update({region:'eu-west-1'});
 var s3 = new AWS.S3();
+
+var $db = new AWS.DynamoDB();
+var DynamoDB = require('aws-dynamodb')($db);
+DynamoDB.on('error', function( operation, error, payload ) {
+    // you could use this to log fails into LogWatch for
+    // later analysis or SQS queue lazy processing
+});
 
 function generateSessionId(){
     var rnd = crypto.randomBytes(16);
@@ -28,32 +37,61 @@ module.exports = function (app) {
     // api
     app.post('/exp/init', function (req, res) {
         var expData = config.get('expData');
-        var exp_name = 'midgam_binary_rankings';
+        var exp_name = config.get('expName');
+        var dateString = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
 
-        if (!req.session.id) {
-            req.session.id = generateSessionId();
-        }
-        req.session.exp = exp_name;
-        req.session.dt = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
-        req.session.subject = req.body; // TODO - validate user input
-        req.session.stage = 1;
+        // TODO - validate user input before DB update
 
-        var sessionDir = exp_name + '/output/' + req.session.dt + '_' + req.session.id;
-        req.session.dir = sessionDir;
+        DynamoDB
+            .table('Experiments')
+            .where('Name').eq(exp_name)
+            .update({
+                Subjects: DynamoDB.add(1),
+                LastRun: dateString
+            }, function (err, data){
+                if (err){
+                    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ msg: err });
+                }
 
-        return res.send(expData);
+                DynamoDB
+                    .table('Experiments')
+                    .where('Name').eq(exp_name)
+                    .get(function (err, data){
+                        if (err){
+                            return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ msg: err });
+                        }
+
+                        if (!req.session.id) {
+                            req.session.id = generateSessionId();
+                        }
+
+                        req.session.exp = exp_name;
+                        req.session.dt = dateString;
+
+                        req.session.subject = req.body;
+                        req.session.subject.number = data.Subjects;
+                        req.session.subject.id = data.ShortName + '_' + req.session.subject.number;
+                        req.session.stage = 1;
+
+                        var sessionDir = exp_name + '/output/' + req.session.dt + '_' + req.session.id;
+                        req.session.dir = sessionDir;
+
+                        return res.send(expData);
+                    });
+            });
     });
 
     app.post('/exp/rankings', function (req, res) {
         if (!req.session.subject) {
-            return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ session: JSON.stringify(req.session), cookies: JSON.stringify(req.cookies) });
+            return res.sendStatus(httpStatus.FORBIDDEN);
+            //return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ session: JSON.stringify(req.session), cookies: JSON.stringify(req.cookies) });
         }
 
         async.parallel([
             function (callback){
                 json2csv({
                     data: req.body.trials,
-                    fields: [ { value: 'subjectId', default: req.session.id }, 'runtrial', 'onsettime', 'ImageLeft', 'ImageRight', 'StimNumLeft', 'StimNumRight', 'Response', 'RT'],
+                    fields: [ { value: 'subjectId', default: req.session.subject.id }, 'runtrial', 'onsettime', 'ImageLeft', 'ImageRight', 'StimNumLeft', 'StimNumRight', 'Response', 'RT'],
                     quotes: ''
                 },
                 function(err, csv) {
@@ -76,7 +114,7 @@ module.exports = function (app) {
             function (callback){
                 json2csv({
                     data: req.body.items_ranking,
-                    fields: [ { value: 'subjectId', default: req.session.id }, 'StimName', 'StimNum', 'Rank', 'Wins', 'Losses'],
+                    fields: [ { value: 'subjectId', default: req.session.subject.id }, 'StimName', 'StimNum', 'Rank', 'Wins', 'Losses'],
                     quotes: ''
                 },
                 function(err, csv) {
