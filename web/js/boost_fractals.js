@@ -122,11 +122,11 @@ function rankingStage(expData){
                             nStim2: _.indexOf(stimuli, l.list2[i])
                         },
                         stimulus:
-                                '<img class="leftStim" src="' + expData.resourceUrl + '/images/stimuli/' + l.list1[i] + '" id="jspsych-single-stim-stimulus" />' +
+                                '<img class="leftStim" src="' + expData.resourceUrl + '/images/stimuli/' + l.list1[i] + '" />' +
                                 '<text class="fixationText">+</text>' +
-                                '<img class="rightStim" src="' + expData.resourceUrl + '/images/stimuli/' + l.list2[i] + '" id="jspsych-single-stim-stimulus" />',
+                                '<img class="rightStim" src="' + expData.resourceUrl + '/images/stimuli/' + l.list2[i] + '" />',
                         on_finish: function (data) {
-                            var response = '';
+                            var response = 'x';
                             if (data.key_press > 0) {
                                 if (expData.ranking_key_codes.left == data.key_press) {
                                     response = expData.ranking_keys.left;
@@ -467,7 +467,7 @@ function secondStage(expData) {
     {
         type: 'call-function',
         func: function(){
-            $.ajax('/exp/training', $.extend({ method: 'POST', data: trainingResult, contentType: 'application/json' },
+            $.ajax('/exp/training', $.extend({ method: 'POST', data: JSON.stringify(trainingResult), contentType: 'application/json' },
                 common.ajaxRetries(2, function() {
                     probeStage(expData);
             })));
@@ -649,7 +649,7 @@ function probeStage(expData){
         },
         default_iti: 0,
         on_finish: function() {
-            $.ajax('/exp/probe', $.extend({ method: 'POST', data: probeResult, contentType: 'application/json' }, common.ajaxRetries(2, function() {
+            $.ajax('/exp/probe', $.extend({ method: 'POST', data: JSON.stringify(probeResult), contentType: 'application/json' }, common.ajaxRetries(2, function() {
                 //jsPsych.endExperiment('A fatal error was encountered. The experiment was ended.');
                 //alert('failed /exp/probe');
             })));

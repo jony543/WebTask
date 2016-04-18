@@ -101,7 +101,7 @@ module.exports = function (app) {
 
                     s3.upload({
                         Bucket: config.get('aws:s3Bucket'),
-                        Key: req.session.dir + '/ranking_result.csv',
+                        Key: req.session.dir + '/' + req.session.subject.id + '_' + 'binary_ranking.csv',
                         Body: csv
                     }, function(err, data){
                         if (err){
@@ -114,7 +114,11 @@ module.exports = function (app) {
             function (callback){
                 json2csv({
                     data: req.body.items_ranking,
-                    fields: [ { value: 'subjectId', default: req.session.subject.id }, 'StimName', 'StimNum', 'Rank', 'Wins', 'Losses'],
+                    fields: [
+                        { value: 'subjectId', default: req.session.subject.id },
+                        'StimName', 'StimNum', 'Rank', 'Wins', 'Losses',
+                        { label: 'Total', value: function(row){ row.Wins + row.Losses }, default: '' }
+                    ],
                     quotes: ''
                 },
                 function(err, csv) {
@@ -124,7 +128,7 @@ module.exports = function (app) {
 
                     s3.upload({
                         Bucket: config.get('aws:s3Bucket'),
-                        Key: req.session.dir + '/ItemsRankingResult.csv',
+                        Key: req.session.dir + '/' + req.session.subject.id + '_' + 'ItemsRankingResult.csv',
                         Body: csv
                     }, function(err, data){
                         if (err){

@@ -27,7 +27,29 @@ module.exports.getQueryParams = function () {
     return query_string;
 };
 
+
 module.exports.createRandomCompetitions = function (arr, n){
+    var list1 = [];
+    var list2 = [];
+
+    var count = 0;
+    var arr2 = [];
+
+    while (count < n){
+        if (arr2.length < 2)
+            arr2 = _.shuffle(_.concat(arr2, arr));
+        list1.push(arr2.pop());
+        list2.push(arr2.pop());
+        count++;
+    }
+
+    return {
+        list1: list1,
+        list2: list2
+    }
+}
+
+module.exports.createRandomCompetitions_old = function (arr, n){
     var random_competitions = _.sampleSize(array_choose_k(arr,2),n);
 
     var list1 = [];
@@ -27072,11 +27094,11 @@ function rankingStage(expData){
                             nStim2: _.indexOf(stimuli, l.list2[i])
                         },
                         stimulus:
-                                '<img class="leftStim" src="' + expData.resourceUrl + '/images/stimuli/' + l.list1[i] + '" id="jspsych-single-stim-stimulus" />' +
+                                '<img class="leftStim" src="' + expData.resourceUrl + '/images/stimuli/' + l.list1[i] + '" />' +
                                 '<text class="fixationText">+</text>' +
-                                '<img class="rightStim" src="' + expData.resourceUrl + '/images/stimuli/' + l.list2[i] + '" id="jspsych-single-stim-stimulus" />',
+                                '<img class="rightStim" src="' + expData.resourceUrl + '/images/stimuli/' + l.list2[i] + '" />',
                         on_finish: function (data) {
-                            var response = '';
+                            var response = 'x';
                             if (data.key_press > 0) {
                                 if (expData.ranking_key_codes.left == data.key_press) {
                                     response = expData.ranking_keys.left;
@@ -27417,7 +27439,7 @@ function secondStage(expData) {
     {
         type: 'call-function',
         func: function(){
-            $.ajax('/exp/training', $.extend({ method: 'POST', data: trainingResult, contentType: 'application/json' },
+            $.ajax('/exp/training', $.extend({ method: 'POST', data: JSON.stringify(trainingResult), contentType: 'application/json' },
                 common.ajaxRetries(2, function() {
                     probeStage(expData);
             })));
@@ -27599,7 +27621,7 @@ function probeStage(expData){
         },
         default_iti: 0,
         on_finish: function() {
-            $.ajax('/exp/probe', $.extend({ method: 'POST', data: probeResult, contentType: 'application/json' }, common.ajaxRetries(2, function() {
+            $.ajax('/exp/probe', $.extend({ method: 'POST', data: JSON.stringify(probeResult), contentType: 'application/json' }, common.ajaxRetries(2, function() {
                 //jsPsych.endExperiment('A fatal error was encountered. The experiment was ended.');
                 //alert('failed /exp/probe');
             })));

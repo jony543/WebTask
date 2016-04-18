@@ -1,19 +1,19 @@
 .leftStim {
-    margin-left: 10%;
+    margin-left: 1%;
     float: left;
     width: 35%;
     padding: 5px;
 }
 
 .rightStim {
-    margin-right: 10%;
+    margin-right: 1%;
     float: right;
     width: 35%;
     padding: 5px;
 }
 
 .fixationText {
-    font-size: 100px;
+    font-size: 90px;
     color: white;
     position: fixed;
     top: 50%;

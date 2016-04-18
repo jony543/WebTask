@@ -26,7 +26,29 @@ module.exports.getQueryParams = function () {
     return query_string;
 };
 
+
 module.exports.createRandomCompetitions = function (arr, n){
+    var list1 = [];
+    var list2 = [];
+
+    var count = 0;
+    var arr2 = [];
+
+    while (count < n){
+        if (arr2.length < 2)
+            arr2 = _.shuffle(_.concat(arr2, arr));
+        list1.push(arr2.pop());
+        list2.push(arr2.pop());
+        count++;
+    }
+
+    return {
+        list1: list1,
+        list2: list2
+    }
+}
+
+module.exports.createRandomCompetitions_old = function (arr, n){
     var random_competitions = _.sampleSize(array_choose_k(arr,2),n);
 
     var list1 = [];
