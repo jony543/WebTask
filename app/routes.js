@@ -1,4 +1,4 @@
-var config = require('./config')
+var config = require('./config');
 var fs = require('fs');
 var httpStatus = require('http-status');
 var path = require('path');
@@ -31,7 +31,8 @@ module.exports = function (app) {
     // browser routes
     app.get('/fractals', function (req, res) {
         //TODO - move to serve static middleware
-        res.sendFile(path.normalize(__dirname + '/../public/views/boost_fractals2.html'));
+        //res.sendFile(path.normalize(__dirname + '/../public/views/boost_fractals2.html'));
+        res.redirect('/experiments/boost_fractals');
     });
 
     // api

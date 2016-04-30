@@ -1,7 +1,11 @@
 var gulp = require('gulp');
+var uglify = require('gulp-uglify');
 var connect = require('gulp-connect');
-var browserify = require('browserify')
-var source = require('vinyl-source-stream')
+var browserify = require('browserify');
+var source = require('vinyl-source-stream');
+var buffer = require('vinyl-buffer');
+var gutil = require('gulp-util');
+var babel = require('gulp-babel');
 
 gulp.task('connect', function () {
     connect.server({
@@ -24,10 +28,34 @@ gulp.task('boostFractals', function() {
         .pipe(gulp.dest('./public'));
 });
 
+gulp.task('boostFractalsMin', function() {
+    return browserify('./web/js/boost_fractals.js', { standalone: 'exp' })
+        .bundle()
+        .pipe(source('boost_fractals.js'))
+        .pipe(buffer())
+        .pipe(babel({
+            presets: ['es2015']
+        }))
+        .pipe(uglify().on('error', gutil.log))
+        .pipe(gulp.dest('./public'));
+});
+
 gulp.task('browserifyCommon', function() {
     return browserify(['./common/common.js'], { standalone: "common" })
         .bundle()
         .pipe(source('common.js'))
+        .pipe(gulp.dest('./public'));
+});
+
+gulp.task('browserifyCommonMin', function() {
+    return browserify(['./common/common.js'], { standalone: "common" })
+        .bundle()
+        .pipe(source('common.js'))
+        .pipe(buffer())
+        .pipe(babel({
+            presets: ['es2015']
+        }))
+        .pipe(uglify())
         .pipe(gulp.dest('./public'));
 });
 
@@ -54,6 +82,13 @@ gulp.task('watch', function() {
     //gulp.watch('web/resources/*.*', ['copyResources']);
 });
 
+gulp.task('watchBFMin', function() {
+    gulp.watch('web/**/*.html', ['copyHTML']);
+    gulp.watch('web/**/*.css', ['copyCSS']);
+    gulp.watch('common/**/*.js', ['browserifyCommonMin']);
+    gulp.watch('web/**/*.js', ['boostFractalsMin']);
+});
+
 gulp.task('watchBF', function() {
     gulp.watch('web/**/*.html', ['copyHTML']);
     gulp.watch('web/**/*.css', ['copyCSS']);
@@ -62,5 +97,6 @@ gulp.task('watchBF', function() {
 });
 
 gulp.task('BF', ['copyHTML', 'copyCSS', 'browserifyCommon', 'boostFractals', 'watchBF']);
+gulp.task('BFmin', ['copyHTML', 'copyCSS', 'browserifyCommonMin', 'boostFractalsMin', 'watchBFMin']);
 
 gulp.task('default', ['copyHTML', 'copyCSS', 'browserify', 'browserifyCommon', 'watch']); //'connect', (before watch)

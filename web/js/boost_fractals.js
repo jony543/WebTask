@@ -99,7 +99,7 @@ function rankingStage(expData){
 
     var l = common.createRandomCompetitions(stimuli, expData.rankingTrials);
 
-    var c = colley(stimuli.length);
+    var clly = colley(stimuli.length);
 
     var ranking_result = {};
     ranking_result.trials = [];
@@ -132,12 +132,12 @@ function rankingStage(expData){
                                     response = expData.ranking_keys.left;
                                     stimuliWins[data.nStim1].wins += 1;
                                     stimuliWins[data.nStim2].losses += 1;
-                                    c.addGame(data.nStim1, data.nStim2);
+                                    clly.addGame(data.nStim1, data.nStim2);
                                 } else {
                                     response = expData.ranking_keys.right;
                                     stimuliWins[data.nStim1].losses += 1;
                                     stimuliWins[data.nStim2].wins += 1;
-                                    c.addGame(data.nStim2, data.nStim1);
+                                    clly.addGame(data.nStim2, data.nStim1);
                                 }
                             }
                             ranking_result.trial_count = ranking_result.trial_count + 1;
@@ -232,7 +232,7 @@ function rankingStage(expData){
     timeline.push({
         type: 'call-function',
         func: function(){
-            var rankings = c.solve().array;
+            var rankings = clly.solve().array;
             var stimuli_ranking = [];
             for (var i=0; i < rankings.length; i++){
                 stimuli_ranking.push({
