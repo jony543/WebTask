@@ -141,10 +141,10 @@ module.exports.waitForServerResponseTrial = function(url, opts){
                                 data: JSON.stringify(payload),
                                 contentType: 'application/json'
                             })
-                            .done(function (data) {
+                            .done(function (data, textSstatus, xhr) {
                                 resultValid = true;
                                 if (typeof(opts.cb) == "function"){
-                                    opts.cb(data);
+                                    opts.cb(data, textSstatus, xhr);
                                 }
                             })
                             .fail(function( jqXHR, textStatus, errorThrown ) {

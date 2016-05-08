@@ -6,6 +6,7 @@ var async = require('async');
 var crypto = require('crypto');
 var _ = require('lodash');
 var json2csv = require('json2csv');
+var url = require('url');
 
 var AWS = require('aws-sdk');
 AWS.config.update({region:'eu-west-1'});
@@ -33,7 +34,9 @@ module.exports = function (app) {
     app.get('/fractals', function (req, res) {
         //TODO - move to serve static middleware
         //res.sendFile(path.normalize(__dirname + '/../public/views/boost_fractals2.html'));
-        res.redirect('/experiments/boost_fractals');
+        var urlParts = url.parse(req.url);
+        var urlQuery = urlParts.search || '?' + urlParts.query;
+        res.redirect('/experiments/boost_fractals' + urlQuery);
     });
 
     // api
@@ -146,7 +149,8 @@ module.exports = function (app) {
                 var midgam_id = req.session.subject.midgam_id;
                 req.session = null;
                 console.log('Redirecting user with id ' + midgam_id + ' to www.midgampanel.com')
-                return res.redirect('https://www.midgampanel.com/surveyThanks2.asp?USER=' + midgam_id + '&status=OK');
+                res.location('https://www.midgampanel.com/surveyThanks2.asp?USER=' + midgam_id + '&status=OK');
+                res.sendStatus(httpStatus.CREATED);
             }
 
             if (err){

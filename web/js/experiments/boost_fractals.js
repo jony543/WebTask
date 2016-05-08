@@ -36,9 +36,10 @@ function welcome(){
             type: 'call-function',
             func: function(){
                 var data = jsPsych.data.getLastTrialData();
+                var answers = JSON.parse(data.responses);
                 var params =  common.getQueryParams();
                 var midgamId = params.user || params.USER || params.User;
-                $.extend(subjectData, { country: data.Q0, age: data.Q1, midgam_id: midgamId });
+                $.extend(subjectData, { country: answers.Q0, age: answers.Q1, midgam_id: midgamId });
                 startExperiment(subjectData);
             }
         },
@@ -252,10 +253,11 @@ function rankingStage(expData){
         data: ranking_result,
         waitText: 'Loading next stage...',
         retry_interval: 2000,
-        cb: function (data){
-            if (data.redirect) {
+        cb: function (data, textSstatus, xhr){
+            if (xhr.status == 201) {
                 // data.redirect contains the string URL to redirect to
-                window.location.replace(data.redirect);
+                var redirectionUrl = xhr.getResponseHeader('Location');
+                window.location.replace(redirectionUrl);
             }
         }
     }));
