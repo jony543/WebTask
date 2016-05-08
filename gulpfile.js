@@ -15,21 +15,22 @@ gulp.task('connect', function () {
 });
 
 gulp.task('browserify', function() {
-    return browserify('./web/js/app.js')
+    return browserify('./web/js/app.js', { standalone: 'app' })
         .bundle()
-        .pipe(source('bundle.js'))
+        .pipe(source('app.js'))
         .pipe(gulp.dest('./public'));
 });
 
 gulp.task('boostFractals', function() {
-    return browserify('./web/js/boost_fractals.js', { standalone: 'exp' })
+    return browserify('./web/js/experiments/boost_fractals.js', { standalone: 'exp' })
         .bundle()
         .pipe(source('boost_fractals.js'))
+        .pipe(buffer())
         .pipe(gulp.dest('./public'));
 });
 
 gulp.task('boostFractalsMin', function() {
-    return browserify('./web/js/boost_fractals.js', { standalone: 'exp' })
+    return browserify('./web/js/experiments/boost_fractals.js', { standalone: 'exp' })
         .bundle()
         .pipe(source('boost_fractals.js'))
         .pipe(buffer())

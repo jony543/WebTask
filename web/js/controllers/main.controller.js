@@ -1,6 +1,6 @@
 'use strict';
-var angular = require('angular');
 var $ = require('jquery');
+var angular = require('angular');
 var jsPsych = require('jspsych');
 
 module.exports = function($scope, experimentService) {

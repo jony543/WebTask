@@ -16,6 +16,7 @@ var DynamoDB = require('aws-dynamodb')($db);
 DynamoDB.on('error', function( operation, error, payload ) {
     // you could use this to log fails into LogWatch for
     // later analysis or SQS queue lazy processing
+    console.log('DynamoDB error on ' + operation + ' operation: ' + error + '. payload: ' + payload);
 });
 
 function generateSessionId(){
@@ -142,8 +143,10 @@ module.exports = function (app) {
         ],
         function(err, data){
             if (req.session.subject != undefined && req.session.subject.midgam_id != undefined){
+                var midgam_id = req.session.subject.midgam_id;
                 req.session = null;
-                return res.redirect('https://www.midgampanel.com/surveyThanks2.asp?USER=' + req.session.subject.midgam_id + '&status=OK');
+                console.log('Redirecting user with id ' + midgam_id + ' to www.midgampanel.com')
+                return res.redirect('https://www.midgampanel.com/surveyThanks2.asp?USER=' + midgam_id + '&status=OK');
             }
 
             if (err){

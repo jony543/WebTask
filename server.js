@@ -5,8 +5,7 @@ if (process.env.ENVIRONMENT == 'DEVELOPMENT') {
 
     var child = new (forever.Monitor)('app.js', {
         silent: false,
-        args: [],
-        'killTree': true
+        args: []
     });
 
     child.on('exit', function () {

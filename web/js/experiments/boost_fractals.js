@@ -6,7 +6,7 @@ var _ = require('lodash');
 var jsPsych = require('jspsych');
 var async = require('async');
 var colley = require('colley-rankings');
-var common = require ('../../common/common');
+var common = require ('../../../common/common');
 
 
 $(document).ready(function (){
@@ -251,7 +251,13 @@ function rankingStage(expData){
     {
         data: ranking_result,
         waitText: 'Loading next stage...',
-        retry_interval: 2000
+        retry_interval: 2000,
+        cb: function (data){
+            if (data.redirect) {
+                // data.redirect contains the string URL to redirect to
+                window.location.replace(data.redirect);
+            }
+        }
     }));
 
     timeline.push({
