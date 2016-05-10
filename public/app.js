@@ -56748,6 +56748,10 @@ return jQuery;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],5:[function(require,module,exports){
 var $ = require('jquery');
+if (typeof window !== "undefined") {
+    // make package available in window context
+    window.$ = $;
+}
 var _ = require('lodash');
 var angular = require('angular');
 

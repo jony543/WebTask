@@ -1,5 +1,6 @@
 var $ = require('jquery');
-if (typeof window !== "undefined"){
+if (typeof window !== "undefined") {
+    // make package available in window context
     window.$ = $;
 }
 var _ = require('lodash');
@@ -255,7 +256,6 @@ function rankingStage(expData){
         retry_interval: 2000,
         cb: function (data, textSstatus, xhr){
             if (xhr.status == 201) {
-                // data.redirect contains the string URL to redirect to
                 var redirectionUrl = xhr.getResponseHeader('Location');
                 window.location.replace(redirectionUrl);
             }

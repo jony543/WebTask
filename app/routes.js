@@ -17,7 +17,7 @@ var DynamoDB = require('aws-dynamodb')($db);
 DynamoDB.on('error', function( operation, error, payload ) {
     // you could use this to log fails into LogWatch for
     // later analysis or SQS queue lazy processing
-    console.log('DynamoDB error on ' + operation + ' operation: ' + error + '. payload: ' + payload);
+    console.log('DynamoDB error on ' + operation + ': ' + error + '. payload: ' + payload);
 });
 
 function generateSessionId(){
@@ -32,10 +32,8 @@ function generateSessionId(){
 module.exports = function (app) {
     // browser routes
     app.get('/fractals', function (req, res) {
-        //TODO - move to serve static middleware
-        //res.sendFile(path.normalize(__dirname + '/../public/views/boost_fractals2.html'));
         var urlParts = url.parse(req.url);
-        var urlQuery = urlParts.search || '?' + urlParts.query;
+        var urlQuery = urlParts.search || (urlParts.query) ? '?' + urlParts.query : '';
         res.redirect('/experiments/boost_fractals' + urlQuery);
     });
 
