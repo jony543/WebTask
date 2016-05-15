@@ -21,3 +21,23 @@
     transform: translate(-50%,-50%);
     text-align: center;
 }
+
+.leftStimInstruction {
+    font-size: 50px;
+    color: white;
+    position: fixed;
+    top: 77%;
+    left: 22%;
+    transform: translate(-50%,-50%);
+    text-align: center;
+}
+
+.rightStimInstruction {
+    font-size: 50px;
+    color: white;
+    position: fixed;
+    top: 77%;
+    left: 77%;
+    transform: translate(-50%,-50%);
+    text-align: center;
+}

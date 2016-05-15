@@ -94,7 +94,10 @@ module.exports = function (app) {
             function (callback){
                 json2csv({
                     data: req.body.trials,
-                    fields: [ { value: 'subjectId', default: req.session.subject.id }, 'runtrial', 'onsettime', 'ImageLeft', 'ImageRight', 'StimNumLeft', 'StimNumRight', 'Response', 'RT'],
+                    fields: [
+                        { value: 'subjectId', default: req.session.subject.id },
+                        { value: 'midgamId', default: req.session.subject.midgam_id },
+                        'runtrial', 'onsettime', 'ImageLeft', 'ImageRight', 'StimNumLeft', 'StimNumRight', 'Response', 'RT'],
                     quotes: ''
                 },
                 function(err, csv) {
@@ -119,6 +122,7 @@ module.exports = function (app) {
                     data: req.body.items_ranking,
                     fields: [
                         { value: 'subjectId', default: req.session.subject.id },
+                        { value: 'midgamId', default: req.session.subject.midgam_id },
                         'StimName', 'StimNum', 'Rank', 'Wins', 'Losses',
                         { label: 'Total', value: function(row){ row.Wins + row.Losses }, default: '' }
                     ],
@@ -146,7 +150,7 @@ module.exports = function (app) {
             if (req.session.subject != undefined && req.session.subject.midgam_id != undefined){
                 var midgam_id = req.session.subject.midgam_id;
                 req.session = null;
-                console.log('Redirecting user with id ' + midgam_id + ' to www.midgampanel.com')
+                console.log('Redirecting user with id ' + midgam_id + ' to https://www.midgampanel.com/surveyThanks2.asp');
                 res.location('https://www.midgampanel.com/surveyThanks2.asp?USER=' + midgam_id + '&status=OK');
                 res.sendStatus(httpStatus.CREATED);
             }

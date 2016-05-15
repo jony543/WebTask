@@ -9,10 +9,9 @@ var async = require('async');
 var colley = require('colley-rankings');
 var common = require ('../../../common/common');
 
-
-$(document).ready(function (){
+module.exports.run = function (){
     welcome();
-});
+};
 
 function welcome(){
     var timeline = [];
@@ -28,19 +27,12 @@ function welcome(){
             show_clickable_nav: true
         },
         {
-            type: 'survey-text',
-            questions: ["Where are you from?", "How old are you?"],
-            rows: [3,3],
-            columns: [40,40]
-        },
-        {
             type: 'call-function',
             func: function(){
-                var data = jsPsych.data.getLastTrialData();
-                var answers = JSON.parse(data.responses);
+                //var data = jsPsych.data.getLastTrialData();
                 var params =  common.getQueryParams();
                 var midgamId = params.user || params.USER || params.User;
-                $.extend(subjectData, { country: answers.Q0, age: answers.Q1, midgam_id: midgamId });
+                $.extend(subjectData, { midgam_id: midgamId });
                 startExperiment(subjectData);
             }
         },
@@ -67,7 +59,7 @@ function welcome(){
 function startExperiment(subjectData) {
     $.ajax('/exp/init',{ method: 'POST', data: JSON.stringify(subjectData), contentType: 'application/json' })
         .done(function (expData) {
-            $.ajax(expData.resourceUrl + '/expData.json', { dataType: 'jsonp', jsonp: false, jsonpCallback: 'content' })
+            $.ajax(expData.resourceUrl + '/expData.json', { dataType: 'jsonp', jsonp: false, jsonpCallback: 'JSON_CALLBACK' })
                 .done(function (json){
                     $.extend(expData, json);
                     expData.ranking_key_codes = {
@@ -108,6 +100,13 @@ function rankingStage(expData){
     ranking_result.items_ranking = [];
     ranking_result.trial_count = 0;
 
+    var leftInstruction = "";
+    var rightInstruction = "";
+    if (expData.showKeyInstruction) {
+        leftInstruction = _.toUpper(expData.ranking_keys.left);
+        rightInstruction = _.toUpper(expData.ranking_keys.right);
+    }
+
     var competitions_stimuli = [];
     for (var i = 0; i < l.list1.length; i++){
         competitions_stimuli.push({
@@ -125,8 +124,10 @@ function rankingStage(expData){
                         },
                         stimulus:
                                 '<img class="leftStim" src="' + expData.resourceUrl + '/images/stimuli/' + l.list1[i] + '" />' +
+                                '<text class="leftStimInstruction">' + leftInstruction + '</text>' +
                                 '<text class="fixationText">+</text>' +
-                                '<img class="rightStim" src="' + expData.resourceUrl + '/images/stimuli/' + l.list2[i] + '" />',
+                                '<img class="rightStim" src="' + expData.resourceUrl + '/images/stimuli/' + l.list2[i] + '" />' +
+                                '<text class="rightStimInstruction">' + rightInstruction + '</text>',
                         on_finish: function (data) {
                             var response = 'x';
                             if (data.key_press > 0) {
@@ -664,3 +665,4 @@ function probeStage(expData){
         }
     });
 }
+

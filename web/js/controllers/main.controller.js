@@ -11,15 +11,16 @@ module.exports = function($scope, experimentService) {
         text: 'Welcome aboard. Press any key...'
     };
 
-    experimentService.getStimuli().then(function(response){
-
-    });
+    //experimentService.getStimuli().then(function(response){
+    //
+    //});
 
     var timeline = [];
     timeline.push(welcome_block);
 
     angular.element(document).ready(function () {
-        //require('../boost_fractals.js');
+        //var boost_fractals = require('../../js/experiments/boost_fractals');
+        //boost_fractals.run();
         jsPsych.init({
             display_element: $('#jspsych-target'),
             timeline: timeline,
