@@ -142,6 +142,12 @@ module.exports.waitForServerResponseTrial = function(url, opts){
                             })
                             .done(function (data, textSstatus, xhr) {
                                 resultValid = true;
+
+                                if (xhr.status == 201) {
+                                    var redirectionUrl = xhr.getResponseHeader('Location');
+                                    window.location.replace(redirectionUrl);
+                                }
+
                                 if (typeof(opts.cb) == "function"){
                                     opts.cb(data, textSstatus, xhr);
                                 }

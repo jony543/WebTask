@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="experimentApp">
 <head>
     <meta charset="UTF-8">
-    <title>Tryout</title>
+    <title>Tom Schonber'g Lab</title>
+
     <link href="/jspsych-5.0.3/css/jspsych.css" rel="stylesheet" type="text/css"></link>
     <link href="/css/style.css" rel="stylesheet" type="text/css"></link>
 
@@ -15,15 +16,11 @@
     <script src="/jspsych-5.0.3/plugins/jspsych-instructions.js"></script>
     <script src="/jspsych-5.0.3/plugins/jspsych-survey-text.js"></script>
 
-    <script src="/boost_fractals.js"></script>
-
-    <script>
-        $( document ).ready(function() {
-            exp.run();
-        });
-    </script>
+    <script src="/app.js"></script>
 </head>
 <body style="background-color: black;">
-    <div id="jspsych-target" style="color: white; margin-top: 2%;"></div>
+<div id="jspsych-target" ng-controller="boostFractalsController" style="color: white; margin-top: 2%;">
+    <h3 ng-click="startExperiment()" style="margin: 34px;">Click here to start</h3>
+</div>
 </body>
 </html>

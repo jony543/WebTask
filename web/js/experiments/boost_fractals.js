@@ -44,7 +44,7 @@ function welcome(){
             show_clickable_nav: false,
             allow_keys: false
         });
-    jsPsych.init({
+    jsPsych.init_data({
         display_element: $('#jspsych-target'),
         auto_preload: false,
         timeline: timeline,
@@ -74,7 +74,7 @@ function startExperiment(subjectData) {
         });
 }
 
-function rankingStage(expData){
+function rankingStage(expData, callback){
     var timeline = [];
     var instructionPages = _.map(expData.instructions, function(img){
         return '<img style="max-height: 100%; max-width: 100%; height: auto;" src="' + expData.resourceUrl + '/images/instructions/' + img + '" />'
@@ -294,7 +294,7 @@ function rankingStage(expData){
 
     jsPsych.pluginAPI.preloadImages(images, function(){
         jsPsych.data.clear();
-        jsPsych.init({
+        jsPsych.init_data({
             display_element: $('#jspsych-target'),
             auto_preload: false,
             timeline: timeline,
@@ -493,7 +493,7 @@ function secondStage(expData) {
 
     jsPsych.data.clear();
     jsPsych.pluginAPI.preloadAudioFiles([audioFile], function () {
-        jsPsych.init({
+        jsPsych.init_data({
             display_element: $('#jspsych-target'),
             timeline: timeline,
             auto_preload: false,
@@ -648,7 +648,7 @@ function probeStage(expData){
 
     jsPsych.data.clear();
     common.forceFullScreen();
-    jsPsych.init({
+    jsPsych.init_data({
         display_element: $('#jspsych-target'),
         auto_preload: false,
         timeline: timeline,

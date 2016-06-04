@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="experimentApp">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Tom Schonber'g Lab</title>
@@ -18,8 +18,11 @@
     <script src="../jspsych-5.0.3/plugins/jspsych-survey-text.js"></script>
 
     <script src="app.js"></script>
+
+    <base href="/">
 </head>
-<body style="background-color: black;">
-    <div id="jspsych-target" ng-controller="mainController" style="color: white; margin-top: 2%;"></div>
+<body style="background-color: black;" ng-app="experimentApp">
+    <div ng-view style="color: white; margin-top: 2%;">
+    </div>
 </body>
 </html>

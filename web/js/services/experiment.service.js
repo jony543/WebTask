@@ -1,11 +1,32 @@
 'use strict';
 
 module.exports = function($http) {
-    this.getSomething = function(){
+    this.resourcesUrl = "";
+    this.initData = {};
+    this.expData = {};
+    this.demoData = {};
+
+    this.getMessage = function(){
         return 'something1';
     };
 
-    this.getStimuli = function(){
-        return $http.get('/stimuli/vis/');
+    this.setResourcesUrl = function(url){
+        this.resourcesUrl = url;
+    };
+
+    this.initExperiment = function(subjectData){
+        return $http.post('/exp/init', subjectData);
+    };
+
+    this.getExpData = function(){
+        return $http.get(this.resourcesUrl + '/expData.json',
+            {
+            });
+    };
+
+    this.getDemoData = function(){
+        return $http.get(this.resourcesUrl + '/demoData.json',
+            {
+            });
     };
 };

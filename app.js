@@ -1,4 +1,3 @@
-// TODO - add forever watchdog
 // set up ======================================================================
 var express  = require('express');
 var app      = express();

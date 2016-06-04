@@ -84,6 +84,32 @@ module.exports = function (app) {
             });
     });
 
+    app.post('/exp/finish', function (req, res) {
+        if (!req.session.subject) {
+            return res.sendStatus(httpStatus.FORBIDDEN);
+        }
+
+        s3.upload({
+            Bucket: config.get('aws:s3Bucket'),
+            Key: req.session.dir + '/' + req.session.subject.id + '_' + 'summary.txt',
+            Body: JSON.stringify(req.body)
+        }, function(err, data){
+            if (req.session.subject != undefined && req.session.subject.midgam_id != undefined){
+                var midgam_id = req.session.subject.midgam_id;
+                req.session = null;
+                console.log('Redirecting user with id ' + midgam_id + ' to https://www.midgampanel.com/surveyThanks2.asp');
+                res.location('https://www.midgampanel.com/surveyThanks2.asp?USER=' + midgam_id + '&status=OK');
+                return res.sendStatus(httpStatus.CREATED);
+            }
+
+            if (err){
+                return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err: err });
+            }
+
+            return res.sendStatus(httpStatus.OK);
+        });
+    });
+
     app.post('/exp/rankings', function (req, res) {
         if (!req.session.subject) {
             return res.sendStatus(httpStatus.FORBIDDEN);
@@ -147,14 +173,6 @@ module.exports = function (app) {
             }
         ],
         function(err, data){
-            if (req.session.subject != undefined && req.session.subject.midgam_id != undefined){
-                var midgam_id = req.session.subject.midgam_id;
-                req.session = null;
-                console.log('Redirecting user with id ' + midgam_id + ' to https://www.midgampanel.com/surveyThanks2.asp');
-                res.location('https://www.midgampanel.com/surveyThanks2.asp?USER=' + midgam_id + '&status=OK');
-                res.sendStatus(httpStatus.CREATED);
-            }
-
             if (err){
                 return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err: err });
             }else{

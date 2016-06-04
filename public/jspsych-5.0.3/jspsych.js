@@ -29,7 +29,7 @@ var jsPsych = (function() {
   // public methods
   //
 
-  core.init = function(options) {
+  core.init_data = function(options) {
 
     // reset variables
     timeline = null;
@@ -548,15 +548,17 @@ var jsPsych = (function() {
       DOM_target.html(timeline.end_message);
     }
 
-    if (document.exitFullscreen) {
-      document.exitFullscreen();
-    } else if (document.msExitFullscreen) {
-      document.msExitFullscreen();
-    } else if (document.mozCancelFullScreen) {
-      document.mozCancelFullScreen();
-    } else if (document.webkitExitFullscreen) {
-      document.webkitExitFullscreen();
-    }
+    // commented out exit full screen at the end of experiment
+    //
+    //if (document.exitFullscreen) {
+    //  document.exitFullscreen();
+    //} else if (document.msExitFullscreen) {
+    //  document.msExitFullscreen();
+    //} else if (document.mozCancelFullScreen) {
+    //  document.mozCancelFullScreen();
+    //} else if (document.webkitExitFullscreen) {
+    //  document.webkitExitFullscreen();
+    //}
 
   }
 
