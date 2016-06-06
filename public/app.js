@@ -65519,7 +65519,7 @@ module.exports = function($scope, $element, experimentService) {
     $scope.demoData = undefined;
 
     $scope.startExperiment  = function(){
-        $($element).empty();
+        $($element).find('h3').text('Please wait');
         common.forceFullScreen();
 
         async.waterfall([
@@ -65603,23 +65603,33 @@ module.exports = function($scope, $element, experimentService) {
                 pages: instructionPages,
                 key_forward: ' ',
                 allow_backward: false,
-                show_clickable_nav: true
+                show_clickable_nav: false
             }
         );
 
+        var imagesToPreload = [];
+        imagesToPreload = _.concat(imagesToPreload, _.map(expData.welcome_instructions, function(item) {
+            return expData.resourceUrl + '/images/instructions/' + item;
+        }));
+
         jsPsych.data.clear();
-        jsPsych.init_data({
-            display_element: $($element),
-            auto_preload: false,
-            timeline: timeline,
-            fullscreen: false,
-            default_iti: 0,
-            on_trial_finish: function(){
-                common.forceFullScreen();
-            },
-            on_finish: function (data){
-                callback(null, null);
-            }
+        jsPsych.pluginAPI.preloadImages(imagesToPreload, function() {
+            $($element).empty();
+            common.forceFullScreen();
+
+            jsPsych.init_data({
+                display_element: $($element),
+                auto_preload: false,
+                timeline: timeline,
+                fullscreen: false,
+                default_iti: 0,
+                on_trial_finish: function () {
+                    common.forceFullScreen();
+                },
+                on_finish: function (data) {
+                    callback(null, null);
+                }
+            });
         });
     }
 
@@ -65860,12 +65870,15 @@ module.exports = function($scope, $element, experimentService) {
                 }
             });
 
-        var images = [];
+        var imagesToPreload = [];
         stimuli.forEach(function(stim){
-            images.push(expData.resourceUrl + '/images/stimuli/' + stim);
+            imagesToPreload.push(expData.resourceUrl + '/images/stimuli/' + stim);
         });
+        imagesToPreload = _.concat(imagesToPreload, _.map(expData.ranking_instructions, function(item){
+            return expData.ranking_instructions + '/images/instructions/' + item;
+        }));
 
-        jsPsych.pluginAPI.preloadImages(images, function(){
+        jsPsych.pluginAPI.preloadImages(imagesToPreload, function(){
             jsPsych.data.clear();
             jsPsych.init_data({
                 display_element: $($element),
