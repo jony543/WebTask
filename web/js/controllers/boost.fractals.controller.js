@@ -370,7 +370,7 @@ module.exports = function($scope, $element, experimentService) {
             imagesToPreload.push(expData.resourceUrl + '/images/stimuli/' + stim);
         });
         imagesToPreload = _.concat(imagesToPreload, _.map(expData.ranking_instructions, function(item){
-            return expData.ranking_instructions + '/images/instructions/' + item;
+            return expData.resourceUrl + '/images/instructions/' + item;
         }));
 
         jsPsych.pluginAPI.preloadImages(imagesToPreload, function(){
