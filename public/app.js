@@ -65519,7 +65519,7 @@ module.exports = function($scope, $element, experimentService) {
     $scope.demoData = undefined;
 
     $scope.startExperiment  = function(){
-        $($element).find('h3').text('Please wait');
+        $($element).html('<div class="loader"></div>');
         common.forceFullScreen();
 
         async.waterfall([
@@ -65576,9 +65576,18 @@ module.exports = function($scope, $element, experimentService) {
 
             function(data, callback){ welcome($scope.expData, callback); },
 
-            function(data, callback){ rankingStage($scope.demoData, function(err, data) { $scope.demoData = data; callback(err, data); }); },
-            function(data, callback){ rankingStage($scope.expData, function(err, data) { $scope.expData = data; callback(err, data); }); },
-            function(data, callback){ finalSurvey($scope.expData, callback); }
+            function(data, callback){
+                $($element).html('<div class="loader"></div>');
+                rankingStage($scope.demoData, function(err, data) { $scope.demoData = data; callback(err, data); });
+            },
+            function(data, callback){
+                $($element).html('<div class="loader"></div>');
+                rankingStage($scope.expData, function(err, data) { $scope.expData = data; callback(err, data); });
+            },
+            function(data, callback){
+                $($element).html('<div class="loader"></div>');
+                finalSurvey($scope.expData, callback);
+            }
             //function(data, callback) { secondStage($scope.demoData, function(err, data) { $scope.demoData = data; callback(err, data); }); },
             //function(data, callback) { secondStage($scope.expData, function(err, data) { $scope.expData = data; callback(err, data); }); }
             ],
@@ -65614,9 +65623,8 @@ module.exports = function($scope, $element, experimentService) {
 
         jsPsych.data.clear();
         jsPsych.pluginAPI.preloadImages(imagesToPreload, function() {
-            $($element).empty();
             common.forceFullScreen();
-
+            $($element).find('.loader').hide();
             jsPsych.init_data({
                 display_element: $($element),
                 auto_preload: false,
@@ -65666,19 +65674,27 @@ module.exports = function($scope, $element, experimentService) {
             show_clickable_nav: false
         });
 
-        jsPsych.data.clear();
-        jsPsych.init_data({
-            display_element: $($element),
-            auto_preload: false,
-            timeline: timeline,
-            fullscreen: false,
-            default_iti: -1,
-            on_trial_finish: function(){
-                common.forceFullScreen();
-            },
-            on_finish: function (data){
-                callback(null, null);
+
+        var imagesToPreload = [];
+        imagesToPreload = _.concat(imagesToPreload, _.map(expData.survey_instructions, function(item) {
+            return expData.resourceUrl + '/images/instructions/' + item;
+        }));
+
+        jsPsych.pluginAPI.preloadImages(imagesToPreload, function() {
+            jsPsych.data.clear();
+            jsPsych.init_data({
+                display_element: $($element),
+                auto_preload: false,
+                timeline: timeline,
+                fullscreen: false,
+                default_iti: -1,
+                on_trial_finish: function(){
+                    common.forceFullScreen();
+                },
+                on_finish: function (data){
+                    callback(null, null);
             }
+        });
         });
     }
 
@@ -65845,7 +65861,8 @@ module.exports = function($scope, $element, experimentService) {
                         Rank: rankings[i]
                     });
                 }
-                ranking_result.items_ranking = _.orderBy(stimuli_ranking,'Rank','desc')
+                expData.sortedStimuli = _.orderBy(stimuli_ranking,'Rank','desc');
+                ranking_result.items_ranking = expData.sortedStimuli;
             }
         });
 
@@ -65854,21 +65871,10 @@ module.exports = function($scope, $element, experimentService) {
             timeline.push(common.waitForServerResponseTrial('/exp/rankings',
                 {
                     data: ranking_result,
-                    waitText: 'Loading next stage...',
+                    waitText: 'Please wait...',
                     retry_interval: 2000
                 }));
         }
-
-        timeline.push({
-                type: 'instructions',
-                pages: [
-                    'Click next to continue'
-                ],
-                show_clickable_nav: true,
-                on_finish: function (data) {
-                    expData.sortedStimuli = _.orderBy(ranking_result.items_ranking, 'rank', 'desc');
-                }
-            });
 
         var imagesToPreload = [];
         stimuli.forEach(function(stim){
