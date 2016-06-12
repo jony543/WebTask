@@ -65682,6 +65682,7 @@ module.exports = function($scope, $element, experimentService) {
 
         jsPsych.pluginAPI.preloadImages(imagesToPreload, function() {
             jsPsych.data.clear();
+            $($element).find('.loader').hide();
             jsPsych.init_data({
                 display_element: $($element),
                 auto_preload: false,
@@ -65886,7 +65887,7 @@ module.exports = function($scope, $element, experimentService) {
 
         jsPsych.pluginAPI.preloadImages(imagesToPreload, function(){
             jsPsych.data.clear();
-            $($element).find('.loader').hide();
+
             jsPsych.init_data({
                 display_element: $($element),
                 auto_preload: false,
