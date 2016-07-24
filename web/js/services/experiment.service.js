@@ -2,9 +2,9 @@
 
 module.exports = function($http) {
     this.resourcesUrl = "";
-    this.initData = {};
-    this.expData = {};
-    this.demoData = {};
+
+    this.expData = undefined;
+    this.demoData = undefined;
 
     this.getMessage = function(){
         return 'something1';

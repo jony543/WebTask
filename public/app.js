@@ -27,76 +27,48 @@ module.exports.getQueryParams = function () {
     return query_string;
 };
 
-
 module.exports.createRandomCompetitions = function (arr, n){
     var list1 = [];
     var list2 = [];
 
+    var used_ones = [];
+    var retries = 0;
+
     var count = 0;
     var arr2 = [];
 
-    while (count < n){
-        if (arr2.length < 2)
+    while (count < n)
+    {
+        if (arr2.length < 2 || retries > 10) {
             arr2 = _.shuffle(_.concat(arr2, arr));
-        list1.push(arr2.pop());
-        list2.push(arr2.pop());
-        count++;
+            retries = 0
+        }
+
+        var stim1 = arr2.pop();
+        var stim2 = arr2.pop();
+
+
+        if (_.findIndex(used_ones, function(item){
+                return (item[0] == stim1 && item[1] == stim2) || (item[0] == stim2 && item[1] == stim1)
+            }) >= 0) {
+            arr2.push(stim1);
+            arr2.push(stim2);
+            arr2 = _.shuffle(arr2);
+            retries++;
+        } else {
+            list1.push(stim1);
+            list2.push(stim2);
+            used_ones.push([stim1, stim2]);
+            retries = 0;
+            count++;
+        }
     }
-
-    return {
-        list1: list1,
-        list2: list2
-    }
-}
-
-module.exports.createRandomCompetitions_old = function (arr, n){
-    var random_competitions = _.sampleSize(array_choose_k(arr,2),n);
-
-    var list1 = [];
-    var list2 = [];
-
-    _.each(random_competitions, function(couple){
-        var shuffled = _.shuffle(couple);
-        list1.push(shuffled[0]);
-        list2.push(shuffled[1]);
-    });
 
     return {
         list1: list1,
         list2: list2
     }
 };
-
-function array_choose_k(arr, k){
-    var i, j, combs, head, tailcombs;
-
-    if (k > arr.length || k <= 0) {
-        return [];
-    }
-
-    if (k == arr.length) {
-        return [arr];
-    }
-
-    if (k == 1) {
-        combs = [];
-        for (i = 0; i < arr.length; i++) {
-            combs.push([arr[i]]);
-        }
-        return combs;
-    }
-
-    // 1 < k < arr.length
-    combs = [];
-    for (i = 0; i < arr.length - k + 1; i++) {
-        head = arr.slice(i, i+1);
-        tailcombs = array_choose_k(arr.slice(i + 1), k - 1);
-        for (j = 0; j < tailcombs.length; j++) {
-            combs.push(head.concat(tailcombs[j]));
-        }
-    }
-    return combs;
-}
 
 module.exports.getAllCompetitions = function (arr1, arr2, data){
     var l = [];
@@ -65471,37 +65443,110 @@ var $ = require('jquery');
 if (typeof window !== "undefined") {
     // make package available in window context
     window.$ = $;
+    window.jQuery = $;
 }
 var _ = require('lodash');
-var angular = require('angular')
+var angular = require('angular');
 var ngRoute = require('angular-route');
+//var angularUiRouter = require('angular-ui-router');
 
 var app = angular.module('experimentApp', [ ngRoute ]);
 
 app.config(['$routeProvider', '$locationProvider',
-    function($routeProvider, $locationProvider) {
+    function( $routeProvider, $locationProvider) {
         $routeProvider
-            .when('/welcome', {
-                templateUrl: 'views/blank_jsPsych.html',
-                controller: 'welcomeController'
+            .when('/fractals/', {
+                templateUrl: 'views/welcome.html',
+                controller: 'welcomeController',
+                resolve: {
+                    nextState: function() { return 'ranking-demo' }
+                }
             })
-            .when('/fractals1', {
-                templateUrl: 'views/blank_jsPsych.html',
-                controller: 'rankingStageController'
+            .when('/welcome/', {
+                templateUrl: 'views/welcome.html',
+                controller: 'welcomeController',
+                resolve: {
+                    nextState: function() { return 'ranking-demo' }
+                }
             })
-            //.when('thankYou', {
-            //    templateUrl: 'views/thank_you.html',
-            //    controller: 'thankYouController'
-            //})
+            .when('/welcome/:midgam_user', {
+                templateUrl: 'views/welcome.html',
+                controller: 'welcomeController',
+                resolve: {
+                    nextState: function() { return 'ranking-demo' }
+                }
+            })
+            .when('/ranking-demo', {
+                templateUrl: 'views/blank_jsPsych_withLoader.html',
+                controller: 'rankingStageController',
+                resolve: {
+                    nextState: function() { return 'ranking-full' },
+                    expData: function ($location, experimentService){
+                        if (!experimentService.demoData){
+                            $location.path('welcome');
+                            return;
+                        }
+                        return experimentService.demoData;
+                    }
+                }
+            })
+            .when('/ranking-full', {
+                templateUrl: 'views/blank_jsPsych_withLoader.html',
+                controller: 'rankingStageController',
+                resolve:
+                {
+                    nextState: function() { return 'slider-ranking' },
+                    expData: function ($location, experimentService){
+                        if (!experimentService.expData){
+                            $location.path('welcome');
+                            return;
+                        }
+                        return experimentService.expData;
+                    }
+                }
+            })
+            .when('/slider-ranking', {
+                templateUrl: 'views/blank_jsPsych_withLoader.html',
+                controller: 'sliderRankingController',
+                resolve:
+                {
+                    nextState: function() { return 'final-survey' },
+                    expData: function ($location, experimentService){
+                        if (!experimentService.expData){
+                            $location.path('welcome');
+                            return;
+                        }
+                        return experimentService.expData;
+                    }
+                }
+            })
+            .when('/final-survey', {
+                templateUrl: 'views/blank_jsPsych.html',
+                controller: 'finalSurveyController',
+                resolve:
+                {
+                    nextState: function() { return 'thankyou' },
+                    expData: function ($location, experimentService){
+                        if (!experimentService.expData){
+                            $location.path('welcome');
+                            return;
+                        }
+                        return experimentService.expData;
+                    }
+                }
+            })
+            .when('/thankyou', {
+                templateUrl: 'views/thank_you.html',
+                controller: 'thankYouController'
+            })
             .otherwise({
                 redirectTo: '/welcome'
             });
-        $locationProvider.html5Mode(true);
     }]);
 
 require('./services');
 require('./controllers');
-},{"./controllers":20,"./services":25,"angular":5,"angular-route":3,"jquery":9,"lodash":10}],19:[function(require,module,exports){
+},{"./controllers":21,"./services":27,"angular":5,"angular-route":3,"jquery":9,"lodash":10}],19:[function(require,module,exports){
 (function (global){
 'use strict';
 var $ = require('jquery');
@@ -66115,6 +66160,84 @@ module.exports = function($scope, $element, experimentService) {
 };
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../../../common/common":1,"angular":5,"async":6,"colley-rankings":8,"jquery":9}],20:[function(require,module,exports){
+(function (global){
+'use strict';
+var $ = require('jquery');
+var angular = require('angular');
+var jsPsych = (typeof window !== "undefined" ? window['jsPsych'] : typeof global !== "undefined" ? global['jsPsych'] : null);
+var common = require('../../../common/common');
+
+module.exports = function($scope, $location, experimentService, expData, nextState) {
+    // set default expData
+    if (!expData)
+        expData = experimentService.expData;
+
+    finalSurvey(expData, function(err, data){
+        expData = data;
+        $location.path(nextState);
+        $scope.$apply();
+    });
+
+    function finalSurvey(expData, callback){
+        var timeline = [];
+        var img = expData.survey_instructions[0];
+        var survey_answers = {};
+
+        timeline.push(
+            {
+                type: 'survey-text',
+                preamble: '<img style="max-height: 100%; max-width: 100%; height: auto;" src="' + expData.resourceUrl + '/images/instructions/' + img + '" />',
+                questions: [" "],
+                rows: [5],
+                columns: [100],
+                on_finish: function(data) {
+                    $.extend(survey_answers, JSON.parse(data.responses));
+                }
+            }
+        );
+
+        timeline.push(common.waitForServerResponseTrial('/exp/finish',
+            {
+                data: survey_answers,
+                waitText: 'Thank you',
+                retry_interval: 2000
+            }));
+
+        timeline.push({
+            type: 'instructions',
+            pages: [
+                'Thank you'
+            ],
+            show_clickable_nav: false
+        });
+
+
+        var imagesToPreload = [];
+        imagesToPreload = _.concat(imagesToPreload, _.map(expData.survey_instructions, function(item) {
+            return expData.resourceUrl + '/images/instructions/' + item;
+        }));
+
+        jsPsych.pluginAPI.preloadImages(imagesToPreload, function() {
+            jsPsych.data.clear();
+            //$($element).find('.loader').hide();
+            jsPsych.init_data({
+                display_element:  $('#jspsych-target'),
+                auto_preload: false,
+                timeline: timeline,
+                fullscreen: false,
+                default_iti: -1,
+                on_trial_finish: function(){
+                    common.forceFullScreen();
+                },
+                on_finish: function (data){
+                    callback(null, null);
+                }
+            });
+        });
+    }
+};
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../../../common/common":1,"angular":5,"jquery":9}],21:[function(require,module,exports){
 'use strict';
 var app = require('angular').module('experimentApp');
 
@@ -66122,7 +66245,9 @@ app.controller('mainController', require('./main.controller.js'));
 app.controller('boostFractalsController', require('./boost.fractals.controller'));
 app.controller('welcomeController', require('./welcome.controller.js'));
 app.controller('rankingStageController', require('./ranking.stage.controller.js'));
-},{"./boost.fractals.controller":19,"./main.controller.js":21,"./ranking.stage.controller.js":22,"./welcome.controller.js":23,"angular":5}],21:[function(require,module,exports){
+app.controller('sliderRankingController', require('./slider.ranking.controller.js'));
+app.controller('finalSurveyController', require('./final.survey.controller.js'));
+},{"./boost.fractals.controller":19,"./final.survey.controller.js":20,"./main.controller.js":22,"./ranking.stage.controller.js":23,"./slider.ranking.controller.js":24,"./welcome.controller.js":25,"angular":5}],22:[function(require,module,exports){
 (function (global){
 'use strict';
 var $ = require('jquery');
@@ -66130,31 +66255,31 @@ var angular = require('angular');
 var jsPsych = (typeof window !== "undefined" ? window['jsPsych'] : typeof global !== "undefined" ? global['jsPsych'] : null);
 
 module.exports = function($scope, experimentService) {
-    $scope.message = experimentService.getMessage();
+    //$scope.message = experimentService.getMessage();
 
-    var welcome_block = {
-        type: 'text',
-        text: 'Welcome aboard. Press any key...'
-    };
-
-    var timeline = [];
-    timeline.push(welcome_block);
-
-    angular.element(document).ready(function () {
-        //var boost_fractals = require('../../js/experiments/boost_fractals');
-        //boost_fractals.run();
-        jsPsych.init_data({
-            display_element: $('#jspsych-target'),
-            timeline: timeline,
-            fullscreen: false,
-            on_finish: function() {
-                jsPsych.data.displayData();
-            }
-        });
-    });
+    //var welcome_block = {
+    //    type: 'text',
+    //    text: 'Welcome aboard. Press any key...'
+    //};
+    //
+    //var timeline = [];
+    //timeline.push(welcome_block);
+    //
+    //angular.element(document).ready(function () {
+    //    //var boost_fractals = require('../../js/experiments/boost_fractals');
+    //    //boost_fractals.run();
+    //    jsPsych.init_data({
+    //        display_element: $('#jspsych-target'),
+    //        timeline: timeline,
+    //        fullscreen: false,
+    //        on_finish: function() {
+    //            jsPsych.data.displayData();
+    //        }
+    //    });
+    //});
 };
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"angular":5,"jquery":9}],22:[function(require,module,exports){
+},{"angular":5,"jquery":9}],23:[function(require,module,exports){
 (function (global){
 'use strict';
 var $ = require('jquery');
@@ -66164,10 +66289,15 @@ var colley = require('colley-rankings');
 var async = require('async');
 var common = require('../../../common/common');
 
-module.exports = function($scope, experimentService) {
+module.exports = function($scope, $location, experimentService, expData, nextState) {
+    // set default expData
+    if (!expData)
+        expData = experimentService.expData;
 
-    rankingStage(experimentService.expData, function(err, data){
-        experimentService.expData = data;
+    rankingStage(expData, function(err, data){
+        expData = data;
+        $location.path(nextState);
+        $scope.$apply();
     });
 
     function rankingStage(expData, callback){
@@ -66333,7 +66463,8 @@ module.exports = function($scope, experimentService) {
                         Rank: rankings[i]
                     });
                 }
-                ranking_result.items_ranking = _.orderBy(stimuli_ranking,'Rank','desc')
+                expData.sortedStimuli = _.orderBy(stimuli_ranking,'Rank','desc');
+                ranking_result.items_ranking = expData.sortedStimuli;
             }
         });
 
@@ -66342,70 +66473,141 @@ module.exports = function($scope, experimentService) {
             timeline.push(common.waitForServerResponseTrial('/exp/rankings',
                 {
                     data: ranking_result,
-                    waitText: 'Loading next stage...',
-                    retry_interval: 2000,
-                    cb: function (data, textSstatus, xhr) {
-                        if (xhr.status == 201) {
-                            var redirectionUrl = xhr.getResponseHeader('Location');
-                            window.location.replace(redirectionUrl);
-                        }
-                    }
+                    waitText: 'Please wait...',
+                    retry_interval: 2000
                 }));
         }
 
-        timeline.push({
-                type: 'instructions',
-                pages: [
-                    'Click next to continue'
-                ],
-                show_clickable_nav: true,
-                on_finish: function (data) {
-                    expData.sortedStimuli = _.orderBy(ranking_result.items_ranking, 'rank', 'desc');
-                    common.forceFullScreen();
-                    //jsPsych.endExperiment('End of ranking stage');
-                    callback(null, expData);  // TODO - fix sync issue with next stage!!
-                }
-            },
-            //{
-            //    type: 'call-function',
-            //    func: function(){
-            //        expData.sortedStimuli = _.orderBy(ranking_result.items_ranking, 'rank', 'desc');
-            //        common.forceFullScreen();
-            //        //jsPsych.endExperiment('End of ranking stage');
-            //        callback(null, expData);  // TODO - fix sync issue with next stage!!
-            //    }
-            //},
-            {
-                type: 'instructions',
-                pages: [
-                    'next stage will load shortly. Please wait...'
-                ],
-                show_clickable_nav: false,
-                allow_keys: false
-            });
-
-        var images = [];
+        var imagesToPreload = [];
         stimuli.forEach(function(stim){
-            images.push(expData.resourceUrl + '/images/stimuli/' + stim);
+            imagesToPreload.push(expData.resourceUrl + '/images/stimuli/' + stim);
         });
+        imagesToPreload = _.concat(imagesToPreload, _.map(expData.ranking_instructions, function(item){
+            return expData.resourceUrl + '/images/instructions/' + item;
+        }));
 
-        jsPsych.pluginAPI.preloadImages(images, function(){
+        jsPsych.pluginAPI.preloadImages(imagesToPreload, function(){
             jsPsych.data.clear();
+
             jsPsych.init_data({
-                display_element: $('#jspsych-target'), //($element),
+                display_element: $('#jspsych-target'), // $($element),
                 auto_preload: false,
                 timeline: timeline,
                 fullscreen: false,
                 default_iti: 0,
                 on_trial_finish: function(){
                     common.forceFullScreen();
+                },
+                on_finish: function (data){
+                    callback(null, expData);
                 }
             });
         });
     }
 };
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../../common/common":1,"angular":5,"async":6,"colley-rankings":8,"jquery":9}],23:[function(require,module,exports){
+},{"../../../common/common":1,"angular":5,"async":6,"colley-rankings":8,"jquery":9}],24:[function(require,module,exports){
+(function (global){
+'use strict';
+var $ = require('jquery');
+var angular = require('angular');
+var jsPsych = (typeof window !== "undefined" ? window['jsPsych'] : typeof global !== "undefined" ? global['jsPsych'] : null);
+var common = require('../../../common/common');
+
+module.exports = function($scope, $location, experimentService, expData, nextState) {
+    // set default expData
+    if (!expData)
+        expData = experimentService.expData;
+
+    rankStimuli(expData, function(err, data){
+        expData = data;
+        $location.path(nextState);
+        $scope.$apply();
+    });
+
+    function rankStimuli(expData, callback){
+        var timeline = [];
+
+        if (expData.slider_instructions) {
+            var instructionPages = _.map(expData.slider_instructions, function (img) {
+                return '<img style="max-height: 100%; max-width: 100%; height: auto;" src="' + expData.resourceUrl + '/images/instructions/' + img + '" />'
+            });
+            if (instructionPages && instructionPages.length > 0) {
+                timeline.push(
+                    {
+                        type: 'instructions',
+                        pages: instructionPages,
+                        key_forward: ' ',
+                        allow_backward: false,
+                        show_clickable_nav: false
+                    }
+                );
+            }
+        }
+
+        var rankingRange = 100;
+        var result = {};
+        result.trials = [];
+        result.ranking_range = rankingRange;
+        result.trial_count  = 0;
+
+        var trials = _.map(_.shuffle(expData.stimuli), function (stim){
+            var stimUrl = expData.resourceUrl + '/images/stimuli/' + stim;
+            return {
+                type: 'similarity',
+                is_html: false,
+                stimuli: [stimUrl, stimUrl],
+                labels: ['0', '10'],
+                data: {
+                    stimName: stim
+                },
+                prompt: '', //'Please rank the image above', // '<img src=""'+ expData.resourceUrl + '/images/instructions/slider_trial_instruction.JPG' + '" />',
+                show_response: 'FIRST_STIMULUS',
+                intervals: rankingRange,
+                timing_image_gap: -1,
+                on_finish: function(data){
+                    result.trials.push({
+                        StimName: data.stimName,
+                        Score: data.sim_score,
+                        RT: data.rt
+                    });
+                    result.trial_count = result.trial_count + 1;
+                }
+            };
+        });
+
+        timeline.push({
+            timeline: trials
+        });
+
+        if (!expData.is_demo) {
+            timeline.push(common.waitForServerResponseTrial('/exp/slider_ranking',
+                {
+                    data: result,
+                    waitText: 'Please wait...',
+                    retry_interval: 2000
+                }));
+        }
+
+        jsPsych.data.clear();
+
+        jsPsych.init_data({
+            display_element: $('#jspsych-target'),
+            auto_preload: false,
+            timeline: timeline,
+            fullscreen: false,
+            default_iti: 0,
+            on_trial_finish: function(){
+                common.forceFullScreen();
+            },
+            on_finish: function (data){
+                callback(null, expData);
+            }
+        });
+    };
+};
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../../../common/common":1,"angular":5,"jquery":9}],25:[function(require,module,exports){
 (function (global){
 'use strict';
 var $ = require('jquery');
@@ -66415,95 +66617,131 @@ var colley = require('colley-rankings');
 var async = require('async');
 var common = require('../../../common/common');
 
-module.exports = function($scope, $location, experimentService) {
-    var timeline = [];
-    var subjectData = {};
-    timeline.push(
-        {
-            type: 'instructions',
-            pages: [
-                '<div align="center">Welcome to the experiment. Click next to begin.</div>'
-            ],
-            show_clickable_nav: true,
-            on_finish: function(data) {
-                var params =  common.getQueryParams();
-                var midgamId = params.user || params.USER || params.User;
-                $.extend(subjectData, { midgam_id: midgamId });
-                async.series([
-                    function (callback) {
-                        experimentService.initExperiment(subjectData)
-                            .then(
-                                function (result) {
-                                    if (!result.data.resourceUrl) {
-                                        callback("Error, resourceUrl is undefined", result);
-                                    }
-                                    experimentService.intiData = result.data;
-                                    experimentService.setResourcesUrl(result.data.resourceUrl);
-                                    callback(null, result.data)
-                                },
-                                function (err) {
-                                    callback(err);
-                                });
-                    },
-                    function (callback) {
-                        experimentService.getExpData()
-                            .then(
-                                function (result) {
-                                    experimentService.expData = $.extend({}, experimentService.intiData, result.data);
-                                    experimentService.expData.ranking_key_codes = {
-                                        left: jsPsych.pluginAPI.convertKeyCharacterToKeyCode(experimentService.expData.ranking_keys.left),
-                                        right: jsPsych.pluginAPI.convertKeyCharacterToKeyCode(experimentService.expData.ranking_keys.right)
-                                    };
-                                    callback(null, experimentService.expData);
-                                },
-                                function (err) {
-                                    callback(err);
-                                });
-                    },
-                    function (callback){
-                        experimentService.getDemoData()
-                            .then(
-                                function (result) {
-                                    experimentService.demoData = $.extend({}, experimentService.intiData, result.data);
-                                    experimentService.demoData.ranking_key_codes = {
-                                        left: jsPsych.pluginAPI.convertKeyCharacterToKeyCode(experimentService.expData.ranking_keys.left),
-                                        right: jsPsych.pluginAPI.convertKeyCharacterToKeyCode(experimentService.expData.ranking_keys.right)
-                                    };
-                                    callback(null, experimentService.demoData);
-                                },
-                                function (err) {
-                                    callback(err);
-                                });
-                    }
-                ], function (err, data){
-                    $location.path('fractals1');
-                });
-            }
-        });
+module.exports = function($scope, $location, $routeParams, experimentService, nextState) {
 
-    jsPsych.init_data({
-        display_element: $('#jspsych-target'), // $($element),
-        auto_preload: false,
-        timeline: timeline,
-        fullscreen: false,
-        default_iti: 0,
-        on_trial_start: function(){
+    $scope.startExperiment  = function(){
+        $("jspsych-target").html('<div class="loader"></div>');
+        common.forceFullScreen();
+
+        async.waterfall([
+                function (callback){
+                    var midgamId = $routeParams.midgam_user || $routeParams.user || $routeParams.USER || $routeParams.User;
+                    var data = $.extend({}, { midgam_id: midgamId });
+                    callback(null, data);
+                },
+                function (subject_data, callback) {
+                    experimentService.initExperiment(subject_data)
+                        .then(
+                            function (result) {
+                                if (!result.data.resourceUrl) {
+                                    callback("Error, resourceUrl is undefined", result);
+                                }
+                                experimentService.setResourcesUrl(result.data.resourceUrl);
+                                callback(null, result.data)
+                            },
+                            function (err) {
+                                callback(err);
+                            });
+                },
+                function (init_data, callback) {
+                    experimentService.getExpData()
+                        .then(
+                            function (result) {
+                                experimentService.expData = $.extend({}, init_data, result.data);
+                                experimentService.expData.ranking_key_codes = {
+                                    left: jsPsych.pluginAPI.convertKeyCharacterToKeyCode(experimentService.expData.ranking_keys.left),
+                                    right: jsPsych.pluginAPI.convertKeyCharacterToKeyCode(experimentService.expData.ranking_keys.right)
+                                };
+                                callback(null, experimentService.expData);
+                            },
+                            function (err) {
+                                callback(err);
+                            });
+                },
+                function (init_data, callback){
+                    experimentService.getDemoData()
+                        .then(
+                            function (result) {
+                                experimentService.demoData = $.extend({}, init_data, result.data);
+                                experimentService.demoData.ranking_key_codes = {
+                                    left: jsPsych.pluginAPI.convertKeyCharacterToKeyCode(experimentService.expData.ranking_keys.left),
+                                    right: jsPsych.pluginAPI.convertKeyCharacterToKeyCode(experimentService.expData.ranking_keys.right)
+                                };
+                                callback(null, experimentService.demoData);
+                            },
+                            function (err) {
+                                callback(err);
+                            });
+                },
+
+                function(data, callback){ welcome(experimentService.expData, callback); }
+            ],
+            function(err, results){
+                if (err){
+                    console.log(err);
+                    console.log(results);
+
+                    $location.path('/');
+                    $scope.$apply();
+                }
+                else {
+                    $location.path(nextState);
+                    $scope.$apply();
+                }
+            })
+    };
+
+    function welcome(expData, callback){
+        var timeline = [];
+        var subjectData = {};
+
+        var instructionPages = _.map(expData.welcome_instructions, function(img){
+            return '<img style="max-height: 100%; max-width: 100%; height: auto;" src="' + expData.resourceUrl + '/images/instructions/' + img + '" />'
+        });
+        timeline.push(
+            {
+                type: 'instructions',
+                pages: instructionPages,
+                key_forward: ' ',
+                allow_backward: false,
+                show_clickable_nav: false
+            }
+        );
+
+        var imagesToPreload = [];
+        imagesToPreload = _.concat(imagesToPreload, _.map(expData.welcome_instructions, function(item) {
+            return expData.resourceUrl + '/images/instructions/' + item;
+        }));
+
+        jsPsych.data.clear();
+        jsPsych.pluginAPI.preloadImages(imagesToPreload, function() {
             common.forceFullScreen();
-        },
-        on_trial_finish: function(){
-            common.forceFullScreen();
-        }
-    });
+
+            jsPsych.init_data({
+                display_element: $('#jspsych-target'), // $($element),
+                auto_preload: false,
+                timeline: timeline,
+                fullscreen: false,
+                default_iti: 0,
+                on_trial_finish: function () {
+                    common.forceFullScreen();
+                },
+                on_finish: function (data) {
+                    callback(null, null);
+                }
+            });
+        });
+    }
 };
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../../common/common":1,"angular":5,"async":6,"colley-rankings":8,"jquery":9}],24:[function(require,module,exports){
+},{"../../../common/common":1,"angular":5,"async":6,"colley-rankings":8,"jquery":9}],26:[function(require,module,exports){
 'use strict';
 
 module.exports = function($http) {
     this.resourcesUrl = "";
-    this.initData = {};
-    this.expData = {};
-    this.demoData = {};
+
+    this.expData = undefined;
+    this.demoData = undefined;
 
     this.getMessage = function(){
         return 'something1';
@@ -66529,11 +66767,11 @@ module.exports = function($http) {
             });
     };
 };
-},{}],25:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 var app = require('angular').module('experimentApp');
 
 app.service('experimentService', require('./experiment.service'));
-},{"./experiment.service":24,"angular":5}]},{},[18])(18)
+},{"./experiment.service":26,"angular":5}]},{},[18])(18)
 });

@@ -27,76 +27,48 @@ module.exports.getQueryParams = function () {
     return query_string;
 };
 
-
 module.exports.createRandomCompetitions = function (arr, n){
     var list1 = [];
     var list2 = [];
 
+    var used_ones = [];
+    var retries = 0;
+
     var count = 0;
     var arr2 = [];
 
-    while (count < n){
-        if (arr2.length < 2)
+    while (count < n)
+    {
+        if (arr2.length < 2 || retries > 10) {
             arr2 = _.shuffle(_.concat(arr2, arr));
-        list1.push(arr2.pop());
-        list2.push(arr2.pop());
-        count++;
+            retries = 0
+        }
+
+        var stim1 = arr2.pop();
+        var stim2 = arr2.pop();
+
+
+        if (_.findIndex(used_ones, function(item){
+                return (item[0] == stim1 && item[1] == stim2) || (item[0] == stim2 && item[1] == stim1)
+            }) >= 0) {
+            arr2.push(stim1);
+            arr2.push(stim2);
+            arr2 = _.shuffle(arr2);
+            retries++;
+        } else {
+            list1.push(stim1);
+            list2.push(stim2);
+            used_ones.push([stim1, stim2]);
+            retries = 0;
+            count++;
+        }
     }
-
-    return {
-        list1: list1,
-        list2: list2
-    }
-}
-
-module.exports.createRandomCompetitions_old = function (arr, n){
-    var random_competitions = _.sampleSize(array_choose_k(arr,2),n);
-
-    var list1 = [];
-    var list2 = [];
-
-    _.each(random_competitions, function(couple){
-        var shuffled = _.shuffle(couple);
-        list1.push(shuffled[0]);
-        list2.push(shuffled[1]);
-    });
 
     return {
         list1: list1,
         list2: list2
     }
 };
-
-function array_choose_k(arr, k){
-    var i, j, combs, head, tailcombs;
-
-    if (k > arr.length || k <= 0) {
-        return [];
-    }
-
-    if (k == arr.length) {
-        return [arr];
-    }
-
-    if (k == 1) {
-        combs = [];
-        for (i = 0; i < arr.length; i++) {
-            combs.push([arr[i]]);
-        }
-        return combs;
-    }
-
-    // 1 < k < arr.length
-    combs = [];
-    for (i = 0; i < arr.length - k + 1; i++) {
-        head = arr.slice(i, i+1);
-        tailcombs = array_choose_k(arr.slice(i + 1), k - 1);
-        for (j = 0; j < tailcombs.length; j++) {
-            combs.push(head.concat(tailcombs[j]));
-        }
-    }
-    return combs;
-}
 
 module.exports.getAllCompetitions = function (arr1, arr2, data){
     var l = [];

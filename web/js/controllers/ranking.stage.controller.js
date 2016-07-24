@@ -6,10 +6,15 @@ var colley = require('colley-rankings');
 var async = require('async');
 var common = require('../../../common/common');
 
-module.exports = function($scope, experimentService) {
+module.exports = function($scope, $location, experimentService, expData, nextState) {
+    // set default expData
+    if (!expData)
+        expData = experimentService.expData;
 
-    rankingStage(experimentService.expData, function(err, data){
-        experimentService.expData = data;
+    rankingStage(expData, function(err, data){
+        expData = data;
+        $location.path(nextState);
+        $scope.$apply();
     });
 
     function rankingStage(expData, callback){
@@ -175,7 +180,8 @@ module.exports = function($scope, experimentService) {
                         Rank: rankings[i]
                     });
                 }
-                ranking_result.items_ranking = _.orderBy(stimuli_ranking,'Rank','desc')
+                expData.sortedStimuli = _.orderBy(stimuli_ranking,'Rank','desc');
+                ranking_result.items_ranking = expData.sortedStimuli;
             }
         });
 
@@ -184,63 +190,33 @@ module.exports = function($scope, experimentService) {
             timeline.push(common.waitForServerResponseTrial('/exp/rankings',
                 {
                     data: ranking_result,
-                    waitText: 'Loading next stage...',
-                    retry_interval: 2000,
-                    cb: function (data, textSstatus, xhr) {
-                        if (xhr.status == 201) {
-                            var redirectionUrl = xhr.getResponseHeader('Location');
-                            window.location.replace(redirectionUrl);
-                        }
-                    }
+                    waitText: 'Please wait...',
+                    retry_interval: 2000
                 }));
         }
 
-        timeline.push({
-                type: 'instructions',
-                pages: [
-                    'Click next to continue'
-                ],
-                show_clickable_nav: true,
-                on_finish: function (data) {
-                    expData.sortedStimuli = _.orderBy(ranking_result.items_ranking, 'rank', 'desc');
-                    common.forceFullScreen();
-                    //jsPsych.endExperiment('End of ranking stage');
-                    callback(null, expData);  // TODO - fix sync issue with next stage!!
-                }
-            },
-            //{
-            //    type: 'call-function',
-            //    func: function(){
-            //        expData.sortedStimuli = _.orderBy(ranking_result.items_ranking, 'rank', 'desc');
-            //        common.forceFullScreen();
-            //        //jsPsych.endExperiment('End of ranking stage');
-            //        callback(null, expData);  // TODO - fix sync issue with next stage!!
-            //    }
-            //},
-            {
-                type: 'instructions',
-                pages: [
-                    'next stage will load shortly. Please wait...'
-                ],
-                show_clickable_nav: false,
-                allow_keys: false
-            });
-
-        var images = [];
+        var imagesToPreload = [];
         stimuli.forEach(function(stim){
-            images.push(expData.resourceUrl + '/images/stimuli/' + stim);
+            imagesToPreload.push(expData.resourceUrl + '/images/stimuli/' + stim);
         });
+        imagesToPreload = _.concat(imagesToPreload, _.map(expData.ranking_instructions, function(item){
+            return expData.resourceUrl + '/images/instructions/' + item;
+        }));
 
-        jsPsych.pluginAPI.preloadImages(images, function(){
+        jsPsych.pluginAPI.preloadImages(imagesToPreload, function(){
             jsPsych.data.clear();
+
             jsPsych.init_data({
-                display_element: $('#jspsych-target'), //($element),
+                display_element: $('#jspsych-target'), // $($element),
                 auto_preload: false,
                 timeline: timeline,
                 fullscreen: false,
                 default_iti: 0,
                 on_trial_finish: function(){
                     common.forceFullScreen();
+                },
+                on_finish: function (data){
+                    callback(null, expData);
                 }
             });
         });

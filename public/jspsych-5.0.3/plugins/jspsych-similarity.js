@@ -40,6 +40,9 @@ jsPsych.plugins.similarity = (function() {
     // that need to be cleared if the trial ends early
     var setTimeoutHandlers = [];
 
+    // clear the display
+    $(display_element).html('')
+
     // show the images
     if (!trial.is_html) {
       display_element.append($('<img>', {
@@ -145,9 +148,11 @@ jsPsych.plugins.similarity = (function() {
         }
       }));
 
-      for (var j = 0; j < trial.labels.length; j++) {
-        $("#sliderlabels").append('<li>' + trial.labels[j] + '</li>');
-      }
+      //for (var j = 0; j < trial.labels.length; j++) {
+      //  $("#sliderlabels").append('<li>' + trial.labels[j] + '</li>');
+      //}
+      $("#sliderlabels").append('<li>' + trial.labels[0] + '</li>');
+      $("#sliderlabels").append('<li>' + trial.labels[trial.labels.length - 1] + '</li>');
 
       // position labels to match slider intervals
       var slider_width = $("#slider").width();
@@ -162,8 +167,9 @@ jsPsych.plugins.similarity = (function() {
           'margin': '0px',
           'padding': '0px',
           'text-align': 'center',
-          'position': 'absolute',
-          'left': (spacing_interval * index) - (item_width / 2)
+          'float': (index == 0) ? 'left' : 'right'
+          //'position': 'absolute',
+          //'left': (spacing_interval * index) - (item_width / 2)
         });
       });
 
@@ -171,7 +177,7 @@ jsPsych.plugins.similarity = (function() {
       display_element.append($('<button>', {
         'id': 'next',
         'class': 'sim',
-        'html': 'Submit Answer'
+        'html': '  OK  '
       }));
 
       // if prompt is set, show prompt

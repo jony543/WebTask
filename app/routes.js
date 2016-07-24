@@ -31,11 +31,11 @@ function generateSessionId(){
 
 module.exports = function (app) {
     // browser routes
-    app.get('/fractals', function (req, res) {
-        var urlParts = url.parse(req.url);
-        var urlQuery = urlParts.search || (urlParts.query) ? '?' + urlParts.query : '';
-        res.redirect('/experiments/boost_fractals' + urlQuery);
-    });
+    //app.get('/fractals2', function (req, res) {
+    //    var urlParts = url.parse(req.url);
+    //    var urlQuery = urlParts.search || (urlParts.query) ? '?' + urlParts.query : '';
+    //    res.redirect('/experiments/boost_fractals' + urlQuery);
+    //});
 
     // api
     app.post('/exp/init', function (req, res) {
@@ -179,6 +179,41 @@ module.exports = function (app) {
                 // TODO - destroy session here?
                 return res.sendStatus(httpStatus.OK);
             }
+        });
+    });
+
+    app.post('/exp/slider_ranking', function (req, res) {
+        if (!req.session.subject) {
+            return res.sendStatus(httpStatus.FORBIDDEN);
+            //return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ session: JSON.stringify(req.session), cookies: JSON.stringify(req.cookies) });
+        }
+
+        json2csv({
+            data: req.body.trials,
+            fields: [
+                { value: 'subjectId', default: req.session.subject.id },
+                { value: 'midgamId', default: req.session.subject.midgam_id },
+                'StimName', 'Score', 'RT',
+                { value: 'RankingRange', default: req.body.ranking_range }
+            ],
+            quotes: ''
+        },
+        function(err, csv) {
+            if (err) {
+                return callback(err, null);
+            }
+
+            s3.upload({
+                Bucket: config.get('aws:s3Bucket'),
+                Key: req.session.dir + '/' + req.session.subject.id + '_' + 'SliderRankingResult.csv',
+                Body: csv
+            }, function(err, data){
+                if (err){
+                    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ err: err });
+                }else{
+                    return res.sendStatus(httpStatus.OK);
+                }
+            });
         });
     });
 };

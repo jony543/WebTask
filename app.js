@@ -9,6 +9,7 @@ var expressWinston = require('express-winston');
 var bodyParser = require('body-parser');    // pull information from HTML POST (express4)
 var cookieParser = require('cookie-parser');
 var helmet = require('helmet');
+var url = require('url');
 
 process.env.PWD = process.cwd();
 
@@ -39,13 +40,19 @@ app.use(session({
 }));
 
 app.use(express.static(process.env.PWD + '/public'));          // set the static files location /public/img will be /img for users
-//app.use(morgan('dev'));                                         // log every request to the console
 app.use(bodyParser.json());                                     // parse application/json
 app.use(bodyParser.urlencoded({ extended: true }));            // parse application/x-www-form-urlencoded
 //app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse application/vnd.api+json as json
 
 // routes ======================================================================
 require('./app/routes.js')(app);
+
+// default route
+app.use(function(req, res){
+    var urlParts = url.parse(req.url);
+    var urlQuery = urlParts.search || (urlParts.query) ? '?' + urlParts.query : '';
+    res.redirect('/' + urlQuery);
+});
 
 // error logger ================================================================
 app.use(expressWinston.errorLogger({
