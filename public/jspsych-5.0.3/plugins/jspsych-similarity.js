@@ -41,7 +41,9 @@ jsPsych.plugins.similarity = (function() {
     var setTimeoutHandlers = [];
 
     // clear the display
-    $(display_element).html('')
+    $(display_element).html('<div style="display: inline-block;"></div>');
+    display_element = $(display_element).children()[0];
+    display_element = $(display_element);
 
     // show the images
     if (!trial.is_html) {
