@@ -97,8 +97,13 @@ module.exports = function (app) {
             if (req.session.subject != undefined && req.session.subject.midgam_id != undefined){
                 var midgam_id = req.session.subject.midgam_id;
                 req.session = null;
-                console.log('Redirecting user with id ' + midgam_id + ' to https://www.midgampanel.com/surveyThanks2.asp');
-                res.location('https://www.midgampanel.com/surveyThanks2.asp?USER=' + midgam_id + '&status=OK');
+
+                //console.log('Redirecting user with id ' + midgam_id + ' to https://www.midgampanel.com/surveyThanks2.asp');
+                //res.location('https://www.midgampanel.com/surveyThanks2.asp?USER=' + midgam_id + '&status=OK');
+
+                console.log('Redirecting user with id ' + midgam_id + ' to https://telaviv.qualtrics.com/SE/?SID=SV_0cWXPressnLSkjH');
+                res.location('https://telaviv.qualtrics.com/SE/?SID=SV_0cWXPressnLSkjH&uid=' + midgam_id);
+
                 return res.sendStatus(httpStatus.CREATED);
             }
 
