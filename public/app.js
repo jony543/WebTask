@@ -66562,7 +66562,7 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
                     stimName: stim
                 },
                 prompt: '', //'Please rank the image above', // '<img src=""'+ expData.resourceUrl + '/images/instructions/slider_trial_instruction.JPG' + '" />',
-                show_response: 'FIRST_STIMULUS',
+                show_response: 'ONLY_SECOND_STIMULUS',
                 intervals: rankingRange,
                 timing_image_gap: -1,
                 on_finish: function(data){

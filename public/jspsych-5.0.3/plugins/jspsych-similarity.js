@@ -58,14 +58,18 @@ jsPsych.plugins.similarity = (function() {
       }));
     }
 
-    if (trial.show_response == "FIRST_STIMULUS") {
-      show_response_slider(display_element, trial);
+    if (trial.show_response == "ONLY_SECOND_STIMULUS"){
+      showSecondStim();
+    } else {
+      if (trial.show_response == "FIRST_STIMULUS") {
+        show_response_slider(display_element, trial);
+      }
+
+      setTimeoutHandlers.push(setTimeout(function () {
+        showBlankScreen();
+      }, trial.timing_first_stim));
+
     }
-
-    setTimeoutHandlers.push(setTimeout(function() {
-      showBlankScreen();
-    }, trial.timing_first_stim));
-
 
     function showBlankScreen() {
 
@@ -86,7 +90,7 @@ jsPsych.plugins.similarity = (function() {
 
       $('#jspsych-sim-stim').css('visibility', 'visible');
 
-      if (trial.show_response == "SECOND_STIMULUS") {
+      if (trial.show_response == "SECOND_STIMULUS" || trial.show_response == "ONLY_SECOND_STIMULUS") {
         show_response_slider(display_element, trial);
       }
 
@@ -116,7 +120,14 @@ jsPsych.plugins.similarity = (function() {
         min: 1,
         max: trial.intervals,
         step: 1,
+        change: function( event, ui ) {
+          $("#next").prop('disabled', false);
+          $('#slider .ui-slider-handle').show();
+        }
       });
+
+      // initialize handle to be hidden
+      $('#slider .ui-slider-handle').hide();
 
       // show tick marks
       if (trial.show_ticks) {
@@ -179,8 +190,11 @@ jsPsych.plugins.similarity = (function() {
       display_element.append($('<button>', {
         'id': 'next',
         'class': 'sim',
-        'html': '  OK  '
+        'html': 'OK',
+        'style': 'padding:  10px 40px;'
       }));
+
+      $("#next").prop('disabled', true);
 
       // if prompt is set, show prompt
       if (trial.prompt !== "") {
