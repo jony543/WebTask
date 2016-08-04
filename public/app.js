@@ -66189,7 +66189,7 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
                 preamble: '<img style="max-height: 100%; max-width: 100%; height: auto;" src="' + expData.resourceUrl + '/images/instructions/' + img + '" />',
                 questions: [" "],
                 rows: [5],
-                columns: [100],
+                columns: [50],
                 on_finish: function(data) {
                     $.extend(survey_answers, JSON.parse(data.responses));
                 }
