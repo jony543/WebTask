@@ -26,14 +26,14 @@ textarea {
     margin-left: 1%;
     float: left;
     width: 35%;
-    padding: 5px;
+    /*padding: 5px;*/
 }
 
 .rightStim {
     margin-right: 1%;
     float: right;
     width: 35%;
-    padding: 5px;
+    /*padding: 5px;*/
 }
 
 .fixationText {
@@ -43,25 +43,25 @@ textarea {
     top: 50%;
     left: 50%;
     transform: translate(-50%,-50%);
-    text-align: center;
+    /*text-align: center;*/
 }
 
 .leftStimInstruction {
     font-size: 50px;
     color: white;
-    position: fixed;
-    top: 77%;
-    left: 22%;
-    transform: translate(-50%,-50%);
-    text-align: center;
+    /*position: fixed;*/
+    /*top: 77%;*/
+    /*left: 22%;*/
+    /*transform: translate(-50%,-50%);*/
+    /*text-align: center;*/
 }
 
 .rightStimInstruction {
     font-size: 50px;
     color: white;
-    position: fixed;
-    top: 77%;
-    left: 77%;
-    transform: translate(-50%,-50%);
-    text-align: center;
+    /*position: fixed;*/
+    /*top: 77%;*/
+    /*left: 77%;*/
+    /*transform: translate(-50%,-50%);*/
+    /*text-align: center;*/
 }

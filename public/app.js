@@ -66349,11 +66349,11 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
                                 nStim2: _.indexOf(stimuli, l.list2[i])
                             },
                             stimulus:
-                            '<img class="leftStim" src="' + expData.resourceUrl + '/images/stimuli/' + l.list1[i] + '" />' +
-                            '<text class="leftStimInstruction">' + leftInstruction + '</text>' +
+                            '<div class="leftStim"><img style="width: 100%; padding: 5px;" src="' + expData.resourceUrl + '/images/stimuli/' + l.list1[i] + '" />' +
+                            '<text class="leftStimInstruction">' + leftInstruction + '</text></div>' +
                             '<text class="fixationText">+</text>' +
-                            '<img class="rightStim" src="' + expData.resourceUrl + '/images/stimuli/' + l.list2[i] + '" />' +
-                            '<text class="rightStimInstruction">' + rightInstruction + '</text>',
+                            '<div class="rightStim"><img style="width: 100%; padding: 5px;" src="' + expData.resourceUrl + '/images/stimuli/' + l.list2[i] + '" />' +
+                            '<text class="rightStimInstruction">' + rightInstruction + '</text></div>',
                             on_finish: function (data) {
                                 var response = 'x';
                                 if (data.key_press > 0) {
@@ -66423,9 +66423,17 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
                                         }
 
                                         return [
-                                            '<img class="leftStim" src="' + expData.resourceUrl + '/images/stimuli/' + data.stim1 + '" id="jspsych-single-stim-stimulus" style="' + style1 + '"/>' +
+                                            //'<img class="leftStim" src="' + expData.resourceUrl + '/images/stimuli/' + data.stim1 + '" id="jspsych-single-stim-stimulus" style="' + style1 + '"/>' +
+                                            //'<text class="fixationText">+</text>' +
+                                            //'<img class="rightStim" src="' + expData.resourceUrl + '/images/stimuli/' + data.stim2 + '" id="jspsych-single-stim-stimulus" style="' + style2 + '" />',
+                                            //'<text class="fixationText">+</text>'
+
+                                            '<div class="leftStim"><img style="width: 100%; padding: 5px; ' + style1 + '" src="' + expData.resourceUrl + '/images/stimuli/' + data.stim1 + '" />' +
+                                            '<text class="leftStimInstruction">' + leftInstruction + '</text></div>' +
                                             '<text class="fixationText">+</text>' +
-                                            '<img class="rightStim" src="' + expData.resourceUrl + '/images/stimuli/' + data.stim2 + '" id="jspsych-single-stim-stimulus" style="' + style2 + '" />',
+                                            '<div class="rightStim"><img style="width: 100%; padding: 5px; ' + style2 + '" src="' + expData.resourceUrl + '/images/stimuli/' + data.stim2 + '" />' +
+                                            '<text class="rightStimInstruction">' + rightInstruction + '</text></div>',
+
                                             '<text class="fixationText">+</text>'
                                         ];
                                     },
