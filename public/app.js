@@ -65466,7 +65466,7 @@ app.config(['$routeProvider', '$locationProvider',
                 templateUrl: 'views/welcome.html',
                 controller: 'welcomeController',
                 resolve: {
-                    nextState: function() { return 'ranking-demo' }
+                    nextState: function() { return 'slider-ranking' } // 'ranking-demo' }
                 }
             })
             .when('/welcome/:midgam_user', {
@@ -66643,7 +66643,8 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
                 stimuli: [stimUrl, stimUrl],
                 labels: ['0', '10'],
                 data: {
-                    stimName: stim
+                    stimName: stim,
+                    stimNum: _.indexOf(expData.stimuli, stim)
                 },
                 prompt: '', //'Please rank the image above', // '<img src=""'+ expData.resourceUrl + '/images/instructions/slider_trial_instruction.JPG' + '" />',
                 show_response: 'ONLY_SECOND_STIMULUS',
@@ -66652,6 +66653,7 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
                 on_finish: function(data){
                     result.trials.push({
                         StimName: data.stimName,
+                        StimNum: data.stimNum,
                         Score: data.sim_score,
                         RT: data.rt
                     });

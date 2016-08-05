@@ -198,7 +198,7 @@ module.exports = function (app) {
             fields: [
                 { value: 'subjectId', default: req.session.subject.id },
                 { value: 'midgamId', default: req.session.subject.midgam_id },
-                'StimName', 'Score', 'RT',
+                'StimName', 'StimNum', 'Score', 'RT',
                 { value: 'RankingRange', default: req.body.ranking_range }
             ],
             quotes: ''

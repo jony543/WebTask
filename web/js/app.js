@@ -25,7 +25,7 @@ app.config(['$routeProvider', '$locationProvider',
                 templateUrl: 'views/welcome.html',
                 controller: 'welcomeController',
                 resolve: {
-                    nextState: function() { return 'ranking-demo' }
+                    nextState: function() { return 'slider-ranking' } // 'ranking-demo' }
                 }
             })
             .when('/welcome/:midgam_user', {
