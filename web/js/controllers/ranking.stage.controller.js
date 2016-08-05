@@ -52,8 +52,32 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
 
         var n_missed = 0;
 
+        var break_interval = stimuli.length;
+        var n_breaks = Math.floor(l.list1.length / break_interval) - 1;
+
         var competitions_stimuli = [];
         for (var i = 0; i < l.list1.length; i++){
+            if (i != 0 && i % break_interval == 0){
+                // add "take a break" screen
+                competitions_stimuli.push({
+                    type: 'single-stim',
+                    choices: [' '],
+                    stimulus:
+                        '<div><img style="max-height: 100%; max-width: 100%; width: 100%; height: auto;" src="' + expData.resourceUrl + '/images/instructions/ranking_break.JPG" />' +
+                        '<p style="font-size: 26px; text-align:center;">' + Math.floor(i/break_interval) + ' / ' + n_breaks + '</p></div>',
+                    is_html: true,
+                    timing_response: -1
+                });
+
+                competitions_stimuli.push({
+                    type: 'single-stim',
+                    choices: [],
+                    stimulus: '<text class="fixationText"">+</text>',
+                    is_html: true,
+                    timing_response: 500
+                });
+            }
+
             competitions_stimuli.push({
                     timeline: [
                         {
@@ -261,6 +285,7 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
         imagesToPreload = _.concat(imagesToPreload, _.map(expData.ranking_instructions, function(item){
             return expData.resourceUrl + '/images/instructions/' + item;
         }));
+        imagesToPreload.push(expData.resourceUrl + '/images/instructions/ranking_break.JPG');
 
         jsPsych.pluginAPI.preloadImages(imagesToPreload, function(){
             jsPsych.data.clear();
