@@ -66333,6 +66333,8 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
             rightInstruction = _.toUpper(expData.ranking_keys.right);
         }
 
+        var n_missed = 0;
+
         var competitions_stimuli = [];
         for (var i = 0; i < l.list1.length; i++){
             competitions_stimuli.push({
@@ -66387,20 +66389,68 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
                                 var data = jsPsych.data.getLastTrialData();
                                 return data.key_press < 0;
                             },
-                            timeline: [{
-                                type: 'multi-stim-multi-response',
-                                choices: [[], []],
-                                stimuli: [
-                                    '<p style="font-size: 32px; text-align:center;">You must respond faster</p>',
-                                    '<text class="fixationText"">+</text>'],
-                                is_html: true,
-                                timing_stim: [500, -1],
-                                timing_response: function () {
-                                    var prevTrial = jsPsych.data.getLastTrialData();
-                                    var prevTrialTime = _.min([prevTrial.rt, expData.ranking_rt]);
-                                    return expData.ranking_total_time - prevTrialTime;
+                            timeline: [
+                                {
+                                    type: 'multi-stim-multi-response',
+                                    choices:  function () {
+                                        if (n_missed % 3 == 0) {
+                                            return [[32,13]];
+                                        } else {
+                                            return [[],[]];
+                                        }
+                                    },
+                                    stimuli: function () {
+                                        if (n_missed % 3 == 0) {
+                                            return [
+                                                '<p style="font-size: 32px; text-align:center;">You must respond faster</p>' +
+                                                '<p style="font-size: 32px; text-align:center;">Press space to continue</p>'
+                                            ];
+                                        } else {
+                                            return [
+                                                '<p style="font-size: 32px; text-align:center;">You must respond faster</p>',
+                                                '<text class="fixationText"">+</text>'
+                                            ];
+                                        }
+                                    },
+                                    is_html: true,
+                                    timing_stim: function () {
+                                        if (n_missed % 3 == 0) {
+                                            return [-1];
+                                        } else {
+                                            return [500, -1];
+                                        }
+                                    },
+                                    timing_response: function () {
+                                        if (n_missed % 3 == 0) {
+                                            return -1;
+                                        } else {
+                                            var prevTrial = jsPsych.data.getLastTrialData();
+                                            var prevTrialTime = _.min([prevTrial.rt, expData.ranking_rt]);
+                                            return expData.ranking_total_time - prevTrialTime;
+                                        }
+                                    }
+                                },
+                                {
+                                    conditional_function: function () {
+                                        return n_missed % 3 == 0;
+                                    },
+                                    timeline: [
+                                        {
+                                            type: 'single-stim',
+                                            choices: [],
+                                            stimulus: '<text class="fixationText"">+</text>',
+                                            is_html: true,
+                                            timing_response: 500
+                                        }
+                                    ]
+                                },
+                                {
+                                    type: 'call-function',
+                                    func: function () {
+                                        n_missed += 1;
+                                    }
                                 }
-                            }]
+                            ]
                         },
                         {
                             conditional_function: function () {
@@ -66446,7 +66496,8 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
                                     }
                                 }
                             ]
-                        }]
+                        }
+                    ]
                 }
             );
         }
