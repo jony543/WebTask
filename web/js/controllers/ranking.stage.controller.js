@@ -143,12 +143,11 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
                                     stimuli: function () {
                                         if (n_missed % 3 == 0) {
                                             return [
-                                                '<p style="font-size: 32px; text-align:center;">You must respond faster</p>' +
-                                                '<p style="font-size: 32px; text-align:center;">Press space to continue</p>'
+                                                '<img style="max-height: 100%; max-width: 100%; width: 100%; height: auto;" src="' + expData.resourceUrl + '/images/instructions/answer_quicker_space.JPG" />'
                                             ];
                                         } else {
                                             return [
-                                                '<p style="font-size: 32px; text-align:center;">You must respond faster</p>',
+                                                '<img style="max-height: 100%; max-width: 100%; width: 100%; height: auto;" src="' + expData.resourceUrl + '/images/instructions/answer_quicker.JPG" />',
                                                 '<text class="fixationText"">+</text>'
                                             ];
                                         }
@@ -286,6 +285,8 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
             return expData.resourceUrl + '/images/instructions/' + item;
         }));
         imagesToPreload.push(expData.resourceUrl + '/images/instructions/ranking_break.JPG');
+        imagesToPreload.push(expData.resourceUrl + '/images/instructions/answer_quicker.JPG');
+        imagesToPreload.push(expData.resourceUrl + '/images/instructions/answer_quicker_space.JPG');
 
         jsPsych.pluginAPI.preloadImages(imagesToPreload, function(){
             jsPsych.data.clear();
