@@ -89,10 +89,13 @@ module.exports = function (app) {
             return res.sendStatus(httpStatus.FORBIDDEN);
         }
 
+        var dateString = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '').replace(' ', '_');
+        var fileContent = req.body.Q0 || JSON.stringify(req.body) || '';
+
         s3.upload({
             Bucket: config.get('aws:s3Bucket'),
-            Key: req.session.dir + '/' + req.session.subject.id + '_' + 'summary.txt',
-            Body: JSON.stringify(req.body)
+            Key: req.session.dir + '/' + req.session.subject.id + '_' + dateString + '_' + 'summary.txt',
+            Body: fileContent
         }, function(err, data){
             if (req.session.subject != undefined && req.session.subject.midgam_id != undefined){
                 var midgam_id = req.session.subject.midgam_id;
@@ -136,9 +139,11 @@ module.exports = function (app) {
                         return callback(err, null);
                     }
 
+                    var dateString = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '').replace(' ', '_');
+
                     s3.upload({
                         Bucket: config.get('aws:s3Bucket'),
-                        Key: req.session.dir + '/' + req.session.subject.id + '_' + 'binary_ranking.csv',
+                        Key: req.session.dir + '/' + req.session.subject.id + '_'+ dateString + '_' + 'binary_ranking.csv',
                         Body: csv
                     }, function(err, data){
                         if (err){
@@ -155,7 +160,7 @@ module.exports = function (app) {
                         { value: 'subjectId', default: req.session.subject.id },
                         { value: 'midgamId', default: req.session.subject.midgam_id },
                         'StimName', 'StimNum', 'Rank', 'Wins', 'Losses',
-                        { label: 'Total', value: function(row){ row.Wins + row.Losses }, default: '' }
+                        { label: 'Total', value: function(row){ return row.Wins + row.Losses; }, default: '' }
                     ],
                     quotes: ''
                 },
@@ -164,9 +169,10 @@ module.exports = function (app) {
                         return callback(err, null);
                     }
 
+                    var dateString = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '').replace(' ', '_');
                     s3.upload({
                         Bucket: config.get('aws:s3Bucket'),
-                        Key: req.session.dir + '/' + req.session.subject.id + '_' + 'ItemsRankingResult.csv',
+                        Key: req.session.dir + '/' + req.session.subject.id + '_' + dateString + '_' + 'ItemsRankingResult.csv',
                         Body: csv
                     }, function(err, data){
                         if (err){
@@ -198,7 +204,7 @@ module.exports = function (app) {
             fields: [
                 { value: 'subjectId', default: req.session.subject.id },
                 { value: 'midgamId', default: req.session.subject.midgam_id },
-                'StimName', 'StimNum', 'Score', 'RT',
+                'TrialNum', 'StimName', 'StimNum', 'Score', 'RT',
                 { value: 'RankingRange', default: req.body.ranking_range }
             ],
             quotes: ''
@@ -208,9 +214,10 @@ module.exports = function (app) {
                 return callback(err, null);
             }
 
+            var dateString = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '').replace(' ', '_');
             s3.upload({
                 Bucket: config.get('aws:s3Bucket'),
-                Key: req.session.dir + '/' + req.session.subject.id + '_' + 'SliderRankingResult.csv',
+                Key: req.session.dir + '/' + req.session.subject.id + '_' + dateString + '_' + 'SliderRankingResult.csv',
                 Body: csv
             }, function(err, data){
                 if (err){

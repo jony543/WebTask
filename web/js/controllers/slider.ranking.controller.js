@@ -57,13 +57,14 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
                 intervals: rankingRange,
                 timing_image_gap: -1,
                 on_finish: function(data){
+                    result.trial_count = result.trial_count + 1;
                     result.trials.push({
+                        TrialNum: result.trial_count,
                         StimName: data.stimName,
-                        StimNum: data.stimNum,
+                        StimNum: data.stimNum + 1,
                         Score: data.sim_score,
                         RT: data.rt
                     });
-                    result.trial_count = result.trial_count + 1;
                 }
             };
         });

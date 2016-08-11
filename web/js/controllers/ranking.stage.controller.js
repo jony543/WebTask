@@ -115,11 +115,11 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
                                 ranking_result.trial_count = ranking_result.trial_count + 1;
                                 ranking_result.trials.push({
                                     runtrial: ranking_result.trial_count,
-                                    onsettime: data.onset_time,
+                                    onsettime: data.onset_time / 1000, // onset time in seconds
                                     ImageLeft: data.stim1,
                                     ImageRight: data.stim2,
-                                    StimNumLeft: data.nStim1,
-                                    StimNumRight: data.nStim2,
+                                    StimNumLeft: data.nStim1 + 1,  // stimulus number starting from 1
+                                    StimNumRight: data.nStim2 + 1,
                                     Response: response,
                                     RT: data.rt
                                 });

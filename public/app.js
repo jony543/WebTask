@@ -66398,11 +66398,11 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
                                 ranking_result.trial_count = ranking_result.trial_count + 1;
                                 ranking_result.trials.push({
                                     runtrial: ranking_result.trial_count,
-                                    onsettime: data.onset_time,
+                                    onsettime: data.onset_time / 1000, // onset time in seconds
                                     ImageLeft: data.stim1,
                                     ImageRight: data.stim2,
-                                    StimNumLeft: data.nStim1,
-                                    StimNumRight: data.nStim2,
+                                    StimNumLeft: data.nStim1 + 1,  // stimulus number starting from 1
+                                    StimNumRight: data.nStim2 + 1,
                                     Response: response,
                                     RT: data.rt
                                 });
@@ -66444,13 +66444,13 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
                                         }
                                     },
                                     timing_response: function () {
-                                        if (n_missed % 3 == 0) {
-                                            return -1;
-                                        } else {
+                                        //if (n_missed % 3 == 0) {
+                                        //    return -1;
+                                        //} else {
                                             var prevTrial = jsPsych.data.getLastTrialData();
                                             var prevTrialTime = _.min([prevTrial.rt, expData.ranking_rt]);
                                             return expData.ranking_total_time - prevTrialTime;
-                                        }
+                                        //}
                                     }
                                 },
                                 {
@@ -66652,13 +66652,14 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
                 intervals: rankingRange,
                 timing_image_gap: -1,
                 on_finish: function(data){
+                    result.trial_count = result.trial_count + 1;
                     result.trials.push({
+                        TrialNum: result.trial_count,
                         StimName: data.stimName,
-                        StimNum: data.stimNum,
+                        StimNum: data.stimNum + 1,
                         Score: data.sim_score,
                         RT: data.rt
                     });
-                    result.trial_count = result.trial_count + 1;
                 }
             };
         });
