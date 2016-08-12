@@ -66444,13 +66444,13 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
                                         }
                                     },
                                     timing_response: function () {
-                                        //if (n_missed % 3 == 0) {
-                                        //    return -1;
-                                        //} else {
+                                        if (n_missed % 3 == 0) {
+                                            return -1;
+                                        } else {
                                             var prevTrial = jsPsych.data.getLastTrialData();
                                             var prevTrialTime = _.min([prevTrial.rt, expData.ranking_rt]);
                                             return expData.ranking_total_time - prevTrialTime;
-                                        //}
+                                        }
                                     }
                                 },
                                 {

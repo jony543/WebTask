@@ -10,6 +10,8 @@ var bodyParser = require('body-parser');    // pull information from HTML POST (
 var cookieParser = require('cookie-parser');
 var helmet = require('helmet');
 var url = require('url');
+var csrf = require('csurf');
+
 
 process.env.PWD = process.cwd();
 
@@ -38,6 +40,15 @@ app.use(session({
         maxAge: 1000*60*60*2 // 2 hours in milliseconds
     }
 }));
+
+// protect against CSRF
+app.use(csrf({
+    cookie: true
+}));
+app.use('*.html', function(req, res, next) {
+    res.cookie('XSRF-TOKEN', req.csrfToken());
+    return next();
+});
 
 app.use(express.static(process.env.PWD + '/public'));          // set the static files location /public/img will be /img for users
 app.use(bodyParser.json());                                     // parse application/json
