@@ -42,13 +42,13 @@ app.use(session({
 }));
 
 // protect against CSRF
-app.use(csrf({
-    cookie: true
-}));
-app.use('*.html', function(req, res, next) {
-    res.cookie('XSRF-TOKEN', req.csrfToken());
-    return next();
-});
+//app.use(csrf({
+//    cookie: true
+//}));
+//app.use('*.html', function(req, res, next) {
+//    res.cookie('XSRF-TOKEN', req.csrfToken());
+//    return next();
+//});
 
 app.use(express.static(process.env.PWD + '/public'));          // set the static files location /public/img will be /img for users
 app.use(bodyParser.json());                                     // parse application/json

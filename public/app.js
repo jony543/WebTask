@@ -65445,10 +65445,14 @@ if (typeof window !== "undefined") {
     window.$ = $;
     window.jQuery = $;
 }
+//require('jquery.cookie');
+
 var _ = require('lodash');
 var angular = require('angular');
 var ngRoute = require('angular-route');
 //var angularUiRouter = require('angular-ui-router');
+
+//require('./utils/ajax.csrf.setup');
 
 var app = angular.module('experimentApp', [ ngRoute ]);
 

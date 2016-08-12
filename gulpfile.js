@@ -94,10 +94,10 @@ gulp.task('watchBF', function() {
     gulp.watch('web/**/*.html', ['copyHTML']);
     gulp.watch('web/**/*.css', ['copyCSS']);
     gulp.watch('common/**/*.js', ['browserifyCommon']);
-    gulp.watch('web/**/*.js', ['browserify', 'boostFractals']);
+    gulp.watch('web/**/*.js', ['browserify']);
 });
 
-gulp.task('BF', ['copyHTML', 'copyCSS', 'browserify', 'browserifyCommon', 'boostFractals', 'watchBF']);
+gulp.task('BF', ['copyHTML', 'copyCSS', 'browserify', 'browserifyCommon', 'watchBF']);
 gulp.task('BFmin', ['copyHTML', 'copyCSS', 'browserifyCommonMin', 'boostFractalsMin', 'watchBFMin']);
 
 gulp.task('default', ['copyHTML', 'copyCSS', 'browserify', 'browserifyCommon', 'watch']); //'connect', (before watch)
