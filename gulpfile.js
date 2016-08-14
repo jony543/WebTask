@@ -21,11 +21,22 @@ gulp.task('browserify', function() {
         .pipe(gulp.dest('./public'));
 });
 
+gulp.task('browserifyMin', function() {
+    return browserify('./web/js/app.js', { standalone: 'app' })
+        .bundle()
+        .pipe(source('app.js'))
+        .pipe(buffer())
+        .pipe(babel({
+            presets: ['es2015']
+        }))
+        .pipe(uglify().on('error', gutil.log))
+        .pipe(gulp.dest('./public'));
+});
+
 gulp.task('boostFractals', function() {
     return browserify('./web/js/experiments/boost_fractals.js', { standalone: 'exp' })
         .bundle()
         .pipe(source('boost_fractals.js'))
-        .pipe(buffer())
         .pipe(gulp.dest('./public'));
 });
 
@@ -99,5 +110,7 @@ gulp.task('watchBF', function() {
 
 gulp.task('BF', ['copyHTML', 'copyCSS', 'browserify', 'browserifyCommon', 'watchBF']);
 gulp.task('BFmin', ['copyHTML', 'copyCSS', 'browserifyCommonMin', 'boostFractalsMin', 'watchBFMin']);
+
+gulp.task('prod', ['copyHTML', 'copyCSS', 'browserifyCommonMin', 'browserifyMin']);
 
 gulp.task('default', ['copyHTML', 'copyCSS', 'browserify', 'browserifyCommon', 'watch']); //'connect', (before watch)
