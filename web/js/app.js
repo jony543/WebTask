@@ -44,13 +44,13 @@ app.config(['$routeProvider', '$locationProvider',
                 controller: 'rankingStageController',
                 resolve: {
                     nextState: function() { return 'ranking-full' },
-                    expData: function ($location, experimentService){
+                    expData: ['$location', 'experimentService', function ($location, experimentService){
                         if (!experimentService.demoData){
                             $location.path('welcome');
                             return;
                         }
                         return experimentService.demoData;
-                    }
+                    }]
                 }
             })
             .when('/ranking-full', {
@@ -59,13 +59,13 @@ app.config(['$routeProvider', '$locationProvider',
                 resolve:
                 {
                     nextState: function() { return 'slider-ranking' },
-                    expData: function ($location, experimentService){
+                    expData: ['$location', 'experimentService', function ($location, experimentService){
                         if (!experimentService.expData){
                             $location.path('welcome');
                             return;
                         }
                         return experimentService.expData;
-                    }
+                    }]
                 }
             })
             .when('/slider-ranking', {
@@ -74,13 +74,13 @@ app.config(['$routeProvider', '$locationProvider',
                 resolve:
                 {
                     nextState: function() { return 'final-survey' },
-                    expData: function ($location, experimentService){
+                    expData: ['$location', 'experimentService', function ($location, experimentService){
                         if (!experimentService.expData){
                             $location.path('welcome');
                             return;
                         }
                         return experimentService.expData;
-                    }
+                    }]
                 }
             })
             .when('/final-survey', {
@@ -89,13 +89,13 @@ app.config(['$routeProvider', '$locationProvider',
                 resolve:
                 {
                     nextState: function() { return 'thankyou' },
-                    expData: function ($location, experimentService){
+                    expData: ['$location', 'experimentService', function ($location, experimentService){
                         if (!experimentService.expData){
                             $location.path('welcome');
                             return;
                         }
                         return experimentService.expData;
-                    }
+                    }]
                 }
             })
             .when('/thankyou', {

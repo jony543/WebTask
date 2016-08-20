@@ -2,4 +2,4 @@
 
 var app = require('angular').module('experimentApp');
 
-app.service('experimentService', require('./experiment.service'));
+app.service('experimentService', ['$http', require('./experiment.service')]);

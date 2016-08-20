@@ -38,9 +38,17 @@ module.exports.createRandomCompetitions = function (arr, n){
 
     while (count < n)
     {
-        if (arr2.length < 2 || retries > 10) {
-            arr2 = _.shuffle(_.concat(arr2, arr));
-            retries = 0
+        if (retries > 10) {
+            arr2 = _.shuffle(arr); //_.concat(arr2, arr));
+            list1 = [];
+            list2 = [];
+            count = 0;
+            used_ones = [];
+            retries = 0;
+        }
+
+        if (arr2.length < 2 ) {
+            arr2 = _.shuffle(arr); //_.concat(arr2, arr));
         }
 
         var stim1 = arr2.pop();
