@@ -47,7 +47,7 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
                 type: 'similarity',
                 is_html: false,
                 stimuli: [stimUrl, stimUrl],
-                labels: ['0', '10'],
+                labels: ['0', '2', '4', '6', '8', '10'],
                 data: {
                     stimName: stim,
                     stimNum: _.indexOf(expData.stimuli, stim)
@@ -56,6 +56,7 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
                 show_response: 'ONLY_SECOND_STIMULUS',
                 intervals: rankingRange,
                 timing_image_gap: -1,
+                show_ticks: false,
                 on_finish: function(data){
                     result.trial_count = result.trial_count + 1;
                     result.trials.push({

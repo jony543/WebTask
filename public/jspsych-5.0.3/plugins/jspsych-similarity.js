@@ -190,28 +190,29 @@ jsPsych.plugins.similarity = (function() {
         }
       }));
 
-      //for (var j = 0; j < trial.labels.length; j++) {
-      //  $("#sliderlabels").append('<li>' + trial.labels[j] + '</li>');
-      //}
-      $("#sliderlabels").append('<li>' + trial.labels[0] + '</li>');
-      $("#sliderlabels").append('<li>' + trial.labels[trial.labels.length - 1] + '</li>');
+      for (var j = 0; j < trial.labels.length; j++) {
+        $("#sliderlabels").append('<li>' + trial.labels[j] + '</li>');
+      }
+      //$("#sliderlabels").append('<li>' + trial.labels[0] + '</li>');
+      //$("#sliderlabels").append('<li>' + trial.labels[trial.labels.length - 1] + '</li>');
 
       // position labels to match slider intervals
-      var slider_width = $("#slider").width();
+
+      //var slider_width = $("#slider").width();
       var num_items = trial.labels.length;
-      var item_width = slider_width / num_items;
-      var spacing_interval = slider_width / (num_items - 1);
+      //var item_width = slider_width / num_items;
+      var spacing_interval = (100 / (num_items - 1));
 
       $("#sliderlabels li").each(function(index) {
         $(this).css({
           'display': 'inline-block',
-          //'width': item_width + 'px',
-          //'margin': '0px',
-          //'padding': '0px',
-          //'text-align': 'center',
-          'float': (index == 0) ? 'left' : 'right'
-          //'position': 'absolute',
-          //'left': (spacing_interval * index) - (item_width / 2)
+          'margin': '0px',
+          'font-size': '18px',
+          'padding': '0px',
+          'text-align': 'center',
+          'position': 'absolute',
+          'left': (spacing_interval * index) + '%',
+          'transform': (index == 0) ? 'none' : 'translate(-9px,0px)'
         });
       });
 
