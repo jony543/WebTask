@@ -53,7 +53,7 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
         var n_missed = 0;
 
         var break_interval = stimuli.length;
-        var n_breaks = Math.floor(l.list1.length / break_interval) - 1;
+        var n_breaks = Math.floor(l.list1.length / break_interval);
 
         var competitions_stimuli = [];
         for (var i = 0; i < l.list1.length; i++){
@@ -207,9 +207,9 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
                                         var data = jsPsych.data.getLastTrialData();
 
                                         if (expData.ranking_key_codes.left == data.key_press) {
-                                            style1 = 'background: green;'; //'border: solid 5px green; margin: -5px;';
+                                            style1 = 'background: white;'; //'border: solid 5px green; margin: -5px;';
                                         } else {
-                                            style2 = 'background: green;'; //'border: solid 5px green; margin: -5px;';
+                                            style2 = 'background: white;'; //'border: solid 5px green; margin: -5px;';
                                         }
 
                                         return [
