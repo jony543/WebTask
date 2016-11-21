@@ -84,7 +84,7 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
                         {
                             type: 'single-stim',
                             choices: [expData.ranking_keys.left, expData.ranking_keys.right],
-                            //timing_response: expData.ranking_rt,
+                            timing_response: expData.ranking_rt,
                             is_html: true,
                             data: {
                                 stim1: l.list1[i],
