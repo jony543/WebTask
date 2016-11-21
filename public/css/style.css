@@ -2,6 +2,20 @@ textarea {
     direction: rtl;
 }
 
+body:-webkit-full-screen {
+    width: 100% !important;
+}
+body:-moz-full-screen {
+    width: 100% !important;
+}
+body:-ms-fullscreen {
+    width: 100% !important;
+}
+body:fullscreen {
+    width: 100% !important;
+}
+
+
 .loader {
     border: 16px solid #f3f3f3;
     border-radius: 50%;
@@ -23,16 +37,16 @@ textarea {
 }
 
 .leftStim {
-    margin-left: 1%;
+    margin-left: 10%;
     float: left;
-    width: 35%;
+    width: 25%;
     /*padding: 5px;*/
 }
 
 .rightStim {
-    margin-right: 1%;
+    margin-right: 10%;
     float: right;
-    width: 35%;
+    width: 25%;
     /*padding: 5px;*/
 }
 
@@ -44,6 +58,10 @@ textarea {
     left: 50%;
     transform: translate(-50%,-50%);
     /*text-align: center;*/
+}
+
+.instructionContainer {
+    margin-top: 5%;
 }
 
 .leftStimInstruction {

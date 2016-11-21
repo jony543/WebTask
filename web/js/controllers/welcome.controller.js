@@ -5,6 +5,7 @@ var jsPsych = require('jspsych');
 var colley = require('colley-rankings');
 var async = require('async');
 var common = require('../../../common/common');
+var _ = require('lodash');
 
 module.exports = function($scope, $location, $routeParams, experimentService, nextState) {
 

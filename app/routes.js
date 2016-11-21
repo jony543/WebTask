@@ -51,7 +51,7 @@ module.exports = function (app) {
             .update({
                 Subjects: DynamoDB.add(1),
                 LastRun: dateString
-            }, function (err, data){
+            }, function (   err, data){
                 if (err){
                     return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ msg: err });
                 }
@@ -101,11 +101,11 @@ module.exports = function (app) {
                 var midgam_id = req.session.subject.midgam_id;
                 req.session = null;
 
-                //console.log('Redirecting user with id ' + midgam_id + ' to https://www.midgampanel.com/surveyThanks2.asp');
-                //res.location('https://www.midgampanel.com/surveyThanks2.asp?USER=' + midgam_id + '&status=OK');
+                console.log('Redirecting user with id ' + midgam_id + ' to https://www.midgampanel.com/surveyThanks2.asp');
+                res.location('https://www.midgampanel.com/surveyThanks2.asp?USER=' + midgam_id + '&status=OK');
 
-                console.log('Redirecting user with id ' + midgam_id + ' to https://telaviv.qualtrics.com/SE/?SID=SV_0cWXPressnLSkjH');
-                res.location('https://telaviv.qualtrics.com/SE/?SID=SV_0cWXPressnLSkjH&uid=' + midgam_id);
+                // console.log('Redirecting user with id ' + midgam_id + ' to https://telaviv.qualtrics.com/SE/?SID=SV_0cWXPressnLSkjH');
+                // res.location('https://telaviv.qualtrics.com/SE/?SID=SV_0cWXPressnLSkjH&uid=' + midgam_id);
 
                 return res.sendStatus(httpStatus.CREATED);
             }

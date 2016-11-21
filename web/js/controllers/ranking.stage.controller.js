@@ -5,6 +5,7 @@ var jsPsych = require('jspsych');
 var colley = require('colley-rankings');
 var async = require('async');
 var common = require('../../../common/common');
+var _ = require('lodash');
 
 module.exports = function($scope, $location, experimentService, expData, nextState) {
     // set default expData
@@ -83,7 +84,7 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
                         {
                             type: 'single-stim',
                             choices: [expData.ranking_keys.left, expData.ranking_keys.right],
-                            timing_response: expData.ranking_rt,
+                            //timing_response: expData.ranking_rt,
                             is_html: true,
                             data: {
                                 stim1: l.list1[i],
@@ -93,10 +94,10 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
                             },
                             stimulus:
                             '<div class="leftStim"><img style="width: 100%; padding: 5px;" src="' + expData.resourceUrl + '/images/stimuli/' + l.list1[i] + '" />' +
-                            '<text class="leftStimInstruction">' + leftInstruction + '</text></div>' +
+                            '<div class="instructionContainer"><text class="leftStimInstruction">' + leftInstruction + '</text></div></div>' +
                             '<text class="fixationText">+</text>' +
                             '<div class="rightStim"><img style="width: 100%; padding: 5px;" src="' + expData.resourceUrl + '/images/stimuli/' + l.list2[i] + '" />' +
-                            '<text class="rightStimInstruction">' + rightInstruction + '</text></div>',
+                            '<div class="instructionContainer"><text class="rightStimInstruction">' + rightInstruction + '</text></div></div>',
                             on_finish: function (data) {
                                 var response = 'x';
                                 if (data.key_press > 0) {
@@ -219,10 +220,10 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
                                             //'<text class="fixationText">+</text>'
 
                                             '<div class="leftStim"><img style="width: 100%; padding: 5px; ' + style1 + '" src="' + expData.resourceUrl + '/images/stimuli/' + data.stim1 + '" />' +
-                                            '<text class="leftStimInstruction">' + leftInstruction + '</text></div>' +
+                                            '<div class="instructionContainer"><text class="leftStimInstruction">' + leftInstruction + '</text></div></div>' +
                                             '<text class="fixationText">+</text>' +
                                             '<div class="rightStim"><img style="width: 100%; padding: 5px; ' + style2 + '" src="' + expData.resourceUrl + '/images/stimuli/' + data.stim2 + '" />' +
-                                            '<text class="rightStimInstruction">' + rightInstruction + '</text></div>',
+                                            '<div class="instructionContainer"><text class="rightStimInstruction">' + rightInstruction + '</text></div></div>',
 
                                             '<text class="fixationText">+</text>'
                                         ];
