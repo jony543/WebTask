@@ -83,3 +83,26 @@ body:fullscreen {
     /*transform: translate(-50%,-50%);*/
     /*text-align: center;*/
 }
+
+div#gameContainer {
+    position: fixed;
+    top: 2%;
+    left: 20%;
+    bottom: 2%;
+    right: 20%;
+    min-width: 200px;
+    min-height: 200px;
+    background: black;
+}
+
+div#gameContainer iframe {
+    position: absolute;
+    display: block;
+    border: 0;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+}

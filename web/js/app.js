@@ -29,7 +29,7 @@ app.config(['$routeProvider', '$locationProvider',
                 templateUrl: 'views/welcome.html',
                 controller: 'welcomeController',
                 resolve: {
-                    nextState: function() { return 'ranking-demo' }
+                    nextState: function() { return 'ninja' }
                 }
             })
             .when('/welcome/:midgam_user', {
@@ -95,6 +95,21 @@ app.config(['$routeProvider', '$locationProvider',
                             return;
                         }
                         return experimentService.expData;
+                    }]
+                }
+            })
+            .when('/ninja', {
+                templateUrl: 'views/game_view.html',
+                controller: 'gameController',
+                resolve:
+                {
+                    nextState: function() { return 'thankyou' },
+                    expData: ['$location', 'experimentService', function ($location, experimentService){
+                        // if (!experimentService.expData){
+                        //     $location.path('welcome');
+                        //     return;
+                        // }
+                        return {}; // experimentService.expData;
                     }]
                 }
             })

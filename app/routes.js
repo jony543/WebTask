@@ -58,7 +58,7 @@ module.exports = function (app) {
 
                 DynamoDB
                     .table('Experiments')
-                    .where('Name').eq(exp_name)
+                        .where('Name').eq(exp_name)
                     .get(function (err, data){
                         if (err){
                             return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ msg: err });

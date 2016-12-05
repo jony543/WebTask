@@ -21,6 +21,13 @@ gulp.task('browserify', function() {
         .pipe(gulp.dest('./public'));
 });
 
+gulp.task('browserifyGame', function() {
+    return browserify('./web/js/game.js', { standalone: 'game' })
+        .bundle()
+        .pipe(source('game.bundle.js'))
+        .pipe(gulp.dest('./public'));
+});
+
 gulp.task('browserifyMin', function() {
     return browserify('./web/js/app.js', { standalone: 'app' })
         .bundle()
@@ -105,10 +112,10 @@ gulp.task('watchBF', function() {
     gulp.watch('web/**/*.html', ['copyHTML']);
     gulp.watch('web/**/*.css', ['copyCSS']);
     gulp.watch('common/**/*.js', ['browserifyCommon']);
-    gulp.watch('web/**/*.js', ['browserify']);
+    gulp.watch('web/**/*.js', ['browserify', 'browserifyGame']);
 });
 
-gulp.task('BF', ['copyHTML', 'copyCSS', 'browserify', 'browserifyCommon', 'watchBF']);
+gulp.task('BF', ['copyHTML', 'copyCSS', 'browserify', 'browserifyCommon', 'browserifyGame', 'watchBF']);
 gulp.task('BFmin', ['copyHTML', 'copyCSS', 'browserifyCommonMin', 'boostFractalsMin', 'watchBFMin']);
 
 gulp.task('prod', ['copyHTML', 'copyCSS', 'browserifyCommonMin', 'browserifyMin']);

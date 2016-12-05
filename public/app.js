@@ -66190,7 +66190,7 @@ app.config(['$routeProvider', '$locationProvider',
                 templateUrl: 'views/welcome.html',
                 controller: 'welcomeController',
                 resolve: {
-                    nextState: function() { return 'ranking-demo' }
+                    nextState: function() { return 'ninja' }
                 }
             })
             .when('/welcome/:midgam_user', {
@@ -66259,6 +66259,21 @@ app.config(['$routeProvider', '$locationProvider',
                     }]
                 }
             })
+            .when('/ninja', {
+                templateUrl: 'views/game_view.html',
+                controller: 'gameController',
+                resolve:
+                {
+                    nextState: function() { return 'thankyou' },
+                    expData: ['$location', 'experimentService', function ($location, experimentService){
+                        // if (!experimentService.expData){
+                        //     $location.path('welcome');
+                        //     return;
+                        // }
+                        return {}; // experimentService.expData;
+                    }]
+                }
+            })
             .when('/thankyou', {
                 templateUrl: 'views/thank_you.html',
                 controller: 'thankYouController'
@@ -66270,7 +66285,7 @@ app.config(['$routeProvider', '$locationProvider',
 
 require('./services');
 require('./controllers');
-},{"./controllers":20,"./services":25,"angular":5,"angular-route":3,"jquery":9,"lodash":10}],19:[function(require,module,exports){
+},{"./controllers":21,"./services":26,"angular":5,"angular-route":3,"jquery":9,"lodash":10}],19:[function(require,module,exports){
 (function (global){
 'use strict';
 var $ = require('jquery');
@@ -66351,6 +66366,20 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"../../../common/common":1,"angular":5,"jquery":9,"lodash":10}],20:[function(require,module,exports){
 'use strict';
+var $ = require('jquery');
+var angular = require('angular');
+var common = require('../../../common/common');
+var _ = require('lodash');
+
+module.exports = function($scope, $location, experimentService, expData, nextState) {
+    // set default expData
+    if (!expData)
+        expData = experimentService.expData;
+
+
+};
+},{"../../../common/common":1,"angular":5,"jquery":9,"lodash":10}],21:[function(require,module,exports){
+'use strict';
 var app = require('angular').module('experimentApp');
 
 app.controller('welcomeController', ['$scope', '$location', '$routeParams', 'experimentService', 'nextState',
@@ -66364,7 +66393,10 @@ app.controller('sliderRankingController', ['$scope', '$location', 'experimentSer
 
 app.controller('finalSurveyController', ['$scope', '$location', 'experimentService', 'expData', 'nextState',
     require('./final.survey.controller.js')]);
-},{"./final.survey.controller.js":19,"./ranking.stage.controller.js":21,"./slider.ranking.controller.js":22,"./welcome.controller.js":23,"angular":5}],21:[function(require,module,exports){
+
+app.controller('gameController', ['$scope', '$location', 'experimentService', 'expData', 'nextState',
+    require('./game.controller.js')]);
+},{"./final.survey.controller.js":19,"./game.controller.js":20,"./ranking.stage.controller.js":22,"./slider.ranking.controller.js":23,"./welcome.controller.js":24,"angular":5}],22:[function(require,module,exports){
 (function (global){
 'use strict';
 var $ = require('jquery');
@@ -66677,7 +66709,7 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
     }
 };
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../../common/common":1,"angular":5,"async":6,"colley-rankings":8,"jquery":9,"lodash":10}],22:[function(require,module,exports){
+},{"../../../common/common":1,"angular":5,"async":6,"colley-rankings":8,"jquery":9,"lodash":10}],23:[function(require,module,exports){
 (function (global){
 'use strict';
 var $ = require('jquery');
@@ -66783,7 +66815,7 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
     };
 };
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../../common/common":1,"angular":5,"jquery":9,"lodash":10}],23:[function(require,module,exports){
+},{"../../../common/common":1,"angular":5,"jquery":9,"lodash":10}],24:[function(require,module,exports){
 (function (global){
 'use strict';
 var $ = require('jquery');
@@ -66911,7 +66943,7 @@ module.exports = function($scope, $location, $routeParams, experimentService, ne
     }
 };
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../../common/common":1,"angular":5,"async":6,"colley-rankings":8,"jquery":9,"lodash":10}],24:[function(require,module,exports){
+},{"../../../common/common":1,"angular":5,"async":6,"colley-rankings":8,"jquery":9,"lodash":10}],25:[function(require,module,exports){
 'use strict';
 
 module.exports = function($http) {
@@ -66944,11 +66976,11 @@ module.exports = function($http) {
             });
     };
 };
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 var app = require('angular').module('experimentApp');
 
 app.service('experimentService', ['$http', require('./experiment.service')]);
-},{"./experiment.service":24,"angular":5}]},{},[18])(18)
+},{"./experiment.service":25,"angular":5}]},{},[18])(18)
 });

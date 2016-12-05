@@ -12,3 +12,6 @@ app.controller('sliderRankingController', ['$scope', '$location', 'experimentSer
 
 app.controller('finalSurveyController', ['$scope', '$location', 'experimentService', 'expData', 'nextState',
     require('./final.survey.controller.js')]);
+
+app.controller('gameController', ['$scope', '$location', 'experimentService', 'expData', 'nextState',
+    require('./game.controller.js')]);
