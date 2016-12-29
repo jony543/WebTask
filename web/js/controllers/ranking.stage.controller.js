@@ -93,10 +93,10 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
                                 nStim2: _.indexOf(stimuli, l.list2[i])
                             },
                             stimulus:
-                            '<div class="leftStim"><img style="width: 100%; padding: 5px;" src="' + expData.resourceUrl + '/images/stimuli/' + l.list1[i] + '" />' +
+                            '<div class="leftStim stim"><img src="' + expData.resourceUrl + '/images/stimuli/' + l.list1[i] + '" />' +
                             '<div class="instructionContainer"><text class="leftStimInstruction">' + leftInstruction + '</text></div></div>' +
                             '<text class="fixationText">+</text>' +
-                            '<div class="rightStim"><img style="width: 100%; padding: 5px;" src="' + expData.resourceUrl + '/images/stimuli/' + l.list2[i] + '" />' +
+                            '<div class="rightStim stim"><img src="' + expData.resourceUrl + '/images/stimuli/' + l.list2[i] + '" />' +
                             '<div class="instructionContainer"><text class="rightStimInstruction">' + rightInstruction + '</text></div></div>',
                             on_finish: function (data) {
                                 var response = 'x';
@@ -219,10 +219,10 @@ module.exports = function($scope, $location, experimentService, expData, nextSta
                                             //'<img class="rightStim" src="' + expData.resourceUrl + '/images/stimuli/' + data.stim2 + '" id="jspsych-single-stim-stimulus" style="' + style2 + '" />',
                                             //'<text class="fixationText">+</text>'
 
-                                            '<div class="leftStim"><img style="width: 100%; padding: 5px; ' + style1 + '" src="' + expData.resourceUrl + '/images/stimuli/' + data.stim1 + '" />' +
+                                            '<div class="leftStim stim"><img style="' + style1 + '" src="' + expData.resourceUrl + '/images/stimuli/' + data.stim1 + '" />' +
                                             '<div class="instructionContainer"><text class="leftStimInstruction">' + leftInstruction + '</text></div></div>' +
                                             '<text class="fixationText">+</text>' +
-                                            '<div class="rightStim"><img style="width: 100%; padding: 5px; ' + style2 + '" src="' + expData.resourceUrl + '/images/stimuli/' + data.stim2 + '" />' +
+                                            '<div class="rightStim stim"><img style="' + style2 + '" src="' + expData.resourceUrl + '/images/stimuli/' + data.stim2 + '" />' +
                                             '<div class="instructionContainer"><text class="rightStimInstruction">' + rightInstruction + '</text></div></div>',
 
                                             '<text class="fixationText">+</text>'

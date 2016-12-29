@@ -36,18 +36,30 @@ body:fullscreen {
     100% { transform: rotate(360deg); }
 }
 
+.stim img {
+    width: 100%;
+    padding: 5px;
+
+    user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.stim {
+    width: 25%;
+}
+
 .leftStim {
     margin-left: 10%;
     float: left;
-    width: 25%;
-    /*padding: 5px;*/
 }
 
 .rightStim {
     margin-right: 10%;
     float: right;
-    width: 25%;
-    /*padding: 5px;*/
 }
 
 .fixationText {
