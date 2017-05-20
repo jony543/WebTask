@@ -4,6 +4,8 @@ branch-defaults:
   midgam_fractals:
     environment: schonberglab-midgam-fractals
     group_suffix: null
+  midgam_snacks2:
+    environment: schonberglab-midgam-snacks
 global:
   application_name: schonberg-lab
   branch: null
