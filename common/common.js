@@ -115,7 +115,7 @@ module.exports.waitForServerResponseTrial = function(url, opts){
                         isSending = true;
                         attemptsCount++;
                         $.ajax({
-                                url: url, //'http://localhost:8081' + url,
+                                url: url, //'http://localhost:8080' + url,
                                 method: 'POST',
                                 data: JSON.stringify(payload),
                                 contentType: 'application/json'
