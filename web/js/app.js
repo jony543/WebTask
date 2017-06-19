@@ -58,7 +58,7 @@ app.config(['$routeProvider', '$locationProvider',
                 controller: 'rankingStageController',
                 resolve:
                 {
-                    nextState: function() { return 'slider-ranking' },
+                    nextState: function() { return 'ranking-full' },
                     expData: ['$location', 'experimentService', function ($location, experimentService){
                         if (!experimentService.expData){
                             $location.path('welcome');
@@ -68,11 +68,11 @@ app.config(['$routeProvider', '$locationProvider',
                     }]
                 }
             })
-            .when('/slider-ranking', {
+            .when('/ranking-full', { //todo assign order (counter balance pref/stability), and call other instructions (like in demo)
                 templateUrl: 'views/blank_jsPsych_withLoader.html',
-                controller: 'sliderRankingController',
+                controller: 'rankingStageController',
                 resolve:
-                {
+                    {
                     nextState: function() { return 'final-survey' },
                     expData: ['$location', 'experimentService', function ($location, experimentService){
                         if (!experimentService.expData){
