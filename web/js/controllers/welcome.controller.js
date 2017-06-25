@@ -17,6 +17,7 @@ module.exports = function($scope, $location, $routeParams, experimentService, ne
                 function (callback){
                     var midgamId = $routeParams.midgam_user || $routeParams.user || $routeParams.USER || $routeParams.User;
                     var data = $.extend({}, { midgam_id: midgamId });
+                    var order =  Math.random()
                     callback(null, data);
                 },
                 function (subject_data, callback) {
@@ -64,6 +65,37 @@ module.exports = function($scope, $location, $routeParams, experimentService, ne
                             });
                 },
 
+                function (init_data, callback){
+                    experimentService.getPrefData()
+                        .then(
+                            function (result) {
+                                experimentService.prefExpData = $.extend({}, init_data, result.data);
+                                experimentService.prefExpData.ranking_key_codes = {
+                                    left: jsPsych.pluginAPI.convertKeyCharacterToKeyCode(experimentService.expData.ranking_keys.left),
+                                    right: jsPsych.pluginAPI.convertKeyCharacterToKeyCode(experimentService.expData.ranking_keys.right)
+                                };
+                                callback(null, experimentService.prefExpData);
+                            },
+                            function (err) {
+                                callback(err);
+                            });
+                },
+
+                function (init_data, callback){
+                    experimentService.getrepfData()
+                        .then(
+                            function (result) {
+                                experimentService.repExpData = $.extend({}, init_data, result.data);
+                                experimentService.repExpData.ranking_key_codes = {
+                                    left: jsPsych.pluginAPI.convertKeyCharacterToKeyCode(experimentService.expData.ranking_keys.left),
+                                    right: jsPsych.pluginAPI.convertKeyCharacterToKeyCode(experimentService.expData.ranking_keys.right)
+                                };
+                                callback(null, experimentService.repExpData);
+                            },
+                            function (err) {
+                                callback(err);
+                            });
+                },
                 function(data, callback){ welcome(experimentService.expData, callback); }
             ],
             function(err, results){

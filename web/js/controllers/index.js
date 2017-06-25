@@ -7,8 +7,11 @@ app.controller('welcomeController', ['$scope', '$location', '$routeParams', 'exp
 app.controller('rankingStageController', ['$scope', '$location', 'experimentService', 'expData', 'nextState',
     require('./ranking.stage.controller.js')]);
 
-app.controller('sliderRankingController', ['$scope', '$location', 'experimentService', 'expData', 'nextState',
-    require('./slider.ranking.controller.js')]);
+app.controller('rankingStageController', ['$scope', '$location', 'experimentService', 'expData', 'nextState',
+    require('./ranking.stage.controller.js')]);
+
+//app.controller('sliderRankingController', ['$scope', '$location', 'experimentService', 'expData', 'nextState',
+    //require('./slider.ranking.controller.js')]);
 
 app.controller('finalSurveyController', ['$scope', '$location', 'experimentService', 'expData', 'nextState',
     require('./final.survey.controller.js')]);
