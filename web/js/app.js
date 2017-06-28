@@ -1,4 +1,3 @@
-
 var $ = require('jquery');
 if (typeof window !== "undefined") {
     // make package available in window context
@@ -15,45 +14,7 @@ var ngRoute = require('angular-route');
 //require('./utils/ajax.csrf.setup');
 
 var app = angular.module('experimentApp', [ ngRoute ]);
-
-// todo - form string table- where the order of tasks will be determined - instead of hard code (for counterbalancing)
-var order = Math.random()
-print(order)
-if (order>0.5) {
-    var expData1= ['$location', 'experimentService', function ($location, experimentService){
-        if (!experimentService.prefExpData){
-            $location.path('welcome');
-            return;
-        }
-        return experimentService.prefExpData;
-    }];
-    var expData2=['$location', 'experimentService', function ($location, experimentService){
-        if (!experimentService.repExpData){
-            $location.path('welcome');
-            return;
-        }
-        return experimentService.repExpData;
-    }];
-}else{
-    var expData1= ['$location', 'experimentService', function ($location, experimentService){
-        if (!experimentService.repExpData){
-            $location.path('welcome');
-            return;
-        }
-        return experimentService.repExpData
-    }];
-
-        expData2= ['$location', 'experimentService', function ($location, experimentService){
-        if (!experimentService.prefExpData){
-            $location.path('welcome');
-            return;
-        }
-        return experimentService.prefExpData;
-    }];
-}
-
-
-
+var CBorder = 0.4;//Math.random();
 app.config(['$routeProvider', '$locationProvider',
     function( $routeProvider, $locationProvider) {
         $routeProvider
@@ -92,26 +53,40 @@ app.config(['$routeProvider', '$locationProvider',
                     }]
                 }
             })
-
             .when('/ranking-full', {
                 templateUrl: 'views/blank_jsPsych_withLoader.html',
                 controller: 'rankingStageController',
-                resolve: {
-                    nextState: function () {
-                        return 'ranking-full'
-                    },
-                    expData: expData1
+                resolve:
+                {
+                    nextState: function() { return 'ranking-full2' },
+                    expData: ['$location', 'experimentService', function ($location, experimentService){
+                        if (CBorder<0.5 && !experimentService.expData2){
+                            $location.path('welcome');
+                            return;
+                        }
+                        // return experimentService.expData2;
+                        // if (!experimentService.expData){
+                        //     $location.path('welcome');
+                        //     return;
+                        // }
+                        return experimentService.expData2;
+                    }]
                 }
             })
-
-            .when('/ranking-full', { //todo assign order (counter balance pref/stability), and call other instructions (like in demo)
+            .when('/ranking-full2', {
                 templateUrl: 'views/blank_jsPsych_withLoader.html',
                 controller: 'rankingStageController',
                 resolve:
-                    {
+                {
                     nextState: function() { return 'final-survey' },
-                    expData: expData2
-                }
+                    expData: ['$location', 'experimentService', function ($location, experimentService){
+                        if (!experimentService.expData){
+                            $location.path('welcome');
+                            return;
+                        }
+                        return experimentService.expData;
+                    }]
+                    }
             })
             .when('/final-survey', {
                 templateUrl: 'views/blank_jsPsych.html',
