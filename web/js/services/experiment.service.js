@@ -5,6 +5,7 @@ module.exports = function($http) {
 
     this.expData = undefined;
     this.demoData = undefined;
+    this.expData2 = undefined;
 
     this.getMessage = function(){
         return 'something1';
@@ -18,6 +19,12 @@ module.exports = function($http) {
         return $http.post('/exp/init', subjectData);
     };
 
+    this.getExpData2 = function(){
+        return $http.get(this.resourcesUrl + '/expData2.json',
+            {
+            });
+    };
+
     this.getExpData = function(){
         return $http.get(this.resourcesUrl + '/expData.json',
             {
@@ -29,4 +36,6 @@ module.exports = function($http) {
             {
             });
     };
+
+
 };
